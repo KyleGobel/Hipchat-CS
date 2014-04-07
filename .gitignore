@@ -15,6 +15,14 @@ build/
 [Bb]in/
 [Oo]bj/
 
+#mobile detection log
+src/DeersoWebsite/App_Data/Log.txt
+
+#test output folder
+test/
+#sass-cache
+.sass-cache
+packages
 # Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
 !packages/*/build/
 
@@ -45,6 +53,9 @@ build/
 *.pidb
 *.log
 *.scc
+
+# Sass Cache Files
+*.scssc
 
 # Visual C++ cache files
 ipch/
@@ -94,10 +105,11 @@ publish/
 
 # Publish Web Output
 *.Publish.xml
+*.pubxml
 
 # NuGet Packages Directory
 ## TODO: If you have NuGet Package Restore enabled, uncomment the next line
-#packages/
+packages/
 
 # Windows Azure Build Output
 csx
@@ -132,12 +144,6 @@ UpgradeLog*.htm
 App_Data/*.mdf
 App_Data/*.ldf
 
-
-#LightSwitch generated files
-GeneratedArtifacts/
-_Pvt_Extensions/
-ModelManifest.xml
-
 # =========================
 # Windows detritus
 # =========================
@@ -152,5 +158,7 @@ Desktop.ini
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
-# Mac desktop service store files
+# Mac crap
 .DS_Store
+style.css
+ie-override.css
