@@ -9,7 +9,7 @@
     <authors>Kyle Gobel</authors>
     <description>An easy to use C# wrapper around the Hipchat v2 API</description>
     <language>en-US</language>
-    <projectUrl>http://xunit.codeplex.com/</projectUrl>
+    <projectUrl>https://github.com/KyleGobel/Hipchat-CS/</projectUrl>
     <dependencies>
       <dependency id="ServiceStack" version="[4.0.15, 5.0)"/>
     </dependencies>
