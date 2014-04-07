@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  For more info on this file format visit http://docs.nuget.org/docs/reference/nuspec-reference.
+-->
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">  
+  <metadata>
+    <id>Hipchat-CS</id>
+    <version>0.0.0</version>
+    <authors>Kyle Gobel</authors>
+    <description>An easy to use C# wrapper around the Hipchat v2 API</description>
+    <language>en-US</language>
+    <projectUrl>http://xunit.codeplex.com/</projectUrl>
+    <dependencies>
+      <dependency id="ServiceStack" version="[4.0.15, 5.0)"/>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="../../bin/HipchatCS.Models.dll" target="lib"/>
+  </files>
+</package>
