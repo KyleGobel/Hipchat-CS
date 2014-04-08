@@ -10,7 +10,8 @@ namespace Playground
         {
             var client = new HipchatClient("2xv9SIieULT3wxNrmlTU3AtyNtLLFupQFsWFhqry");
 
-            client.CreateRoom("New Room whatup1");
+            var result = client.GetAllRooms();
+            Assert.NotNull(result);
         }
          
     }

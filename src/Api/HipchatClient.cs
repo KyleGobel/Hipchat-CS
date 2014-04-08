@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Net;
-using Hipchat.Models;
+using HipchatApiV2.Enums;
 using HipchatApiV2.Exceptions;
 using HipchatApiV2.Requests;
 using HipchatApiV2.Responses;
-using HipchatCS.Models;
 using ServiceStack;
 using ServiceStack.Text;
 
 namespace HipchatApiV2
 {
-    public enum RoomPrivacy
-    {
-        Public,
-        Private
-    }
     public class HipchatClient
     {
         private readonly string _authToken;
@@ -76,35 +70,47 @@ namespace HipchatApiV2
 
             try
             {
-                return
-                    HipchatEndpoints.CreateRoomEndpoint(_authToken)
+                return HipchatEndpoints.CreateRoomEndpoint(_authToken)
                         .PostJsonToUrl(request)
                         .FromJson<HipchatCreateRoomResponse>();
             }
             catch (WebException exception)
             {
-                if (exception.IsUnauthorized())
-                    throw new HipchatAuthenticationException(
-                        "Authentication required, this call requires scope 'manage_rooms'.  See https://www.hipchat.com/docs/apiv2/auth",
-                        exception);
-                throw;
+                ExceptionHelpers.HandleWebException(exception, "manage_rooms");
             }
             catch (Exception exception)
             {
-                throw new HipchatGeneralException("Exception in CreateRoom method.  See Inner Exception for details.", exception);
+                ExceptionHelpers.HandleGeneralException(exception, "CreateRoom");
             }
+            return null;
         }
 
-         /// <summary>
+
+        /// <summary>
         /// Send a message to a room
         /// </summary>
-        /// <param name="roomIdOrName">The id or name of the room</param>
+        /// <param name="roomId">The id of the room</param>
         /// <param name="message">message to send</param>
         /// <param name="backgroundColor">the background color of the message, only applicable to html format message</param>
         /// <param name="notify">if the message should notify</param>
         /// <param name="messageFormat">the format of the message</param>
         /// <returns>true if the message was sucessfully sent</returns>
-        public bool SendNotification(string roomIdOrName, string message, RoomColors backgroundColor = RoomColors.Yellow,
+        public bool SendNotification(int roomId, string message, RoomColors backgroundColor = RoomColors.Yellow,
+            bool notify = false, HipchatMessageFormat messageFormat = HipchatMessageFormat.Html)
+        {
+            return SendNotification(roomId.ToString(), message, backgroundColor, notify, messageFormat);
+        }
+
+        /// <summary>
+        /// Send a message to a room
+        /// </summary>
+        /// <param name="roomName">The name of the room</param>
+        /// <param name="message">message to send</param>
+        /// <param name="backgroundColor">the background color of the message, only applicable to html format message</param>
+        /// <param name="notify">if the message should notify</param>
+        /// <param name="messageFormat">the format of the message</param>
+        /// <returns>true if the message was sucessfully sent</returns>
+        public bool SendNotification(string roomName, string message, RoomColors backgroundColor = RoomColors.Yellow,
             bool notify = false, HipchatMessageFormat messageFormat = HipchatMessageFormat.Html)
         {
             if (message.IsEmpty())
@@ -124,7 +130,7 @@ namespace HipchatApiV2
             var result = false;
             try
             {
-                HipchatEndpoints.SendMessageEndpoint(roomIdOrName, _authToken)
+                HipchatEndpoints.SendMessageEndpoint(roomName, _authToken)
                     .PostJsonToUrl(request, null, x =>
                     {
                         if (x.StatusCode == HttpStatusCode.Created)
@@ -133,14 +139,40 @@ namespace HipchatApiV2
             }
             catch (WebException exception)
             {
-                if (exception.IsAny400())
-                    throw new HipchatAuthenticationException(
-                        "Authentication required, this call requires scope 'send_notification'.  See https://www.hipchat.com/docs/apiv2/auth",
-                        exception);
-                throw new HipchatGeneralException("Exception making SendMessage call.  See InnerException for details.", exception);
+                ExceptionHelpers.HandleWebException(exception, "send_notification");
+            }
+            catch (Exception exception)
+            {
+                ExceptionHelpers.HandleGeneralException(exception, "SendNotification");
             }
             return result;
         }
 
+        public HipchatGetAllRoomsResponse GetAllRooms(int startIndex = 0, int maxResults = 100, bool includeArchived = false)
+        {
+            if (startIndex > 100)
+                throw new ArgumentOutOfRangeException("startIndex", "startIndex must be between 0 and 100");
+            if (maxResults > 100)
+                throw new ArgumentOutOfRangeException("maxResults", "maxResults must be between 0 and 100");
+
+            var endpoint = HipchatEndpoints.GetAllRoomsEndpoint
+                .AddQueryParam("start-index", startIndex)
+                .AddQueryParam("max-results", maxResults)
+                .AddQueryParam("include-archived", includeArchived)
+                .AddQueryParam("auth_token", _authToken);
+            try
+            {
+                return endpoint.GetJsonFromUrl().FromJson<HipchatGetAllRoomsResponse>();
+            }
+            catch (WebException exception)
+            {
+                ExceptionHelpers.HandleWebException(exception, "view_group");
+            }
+            catch (Exception exception)
+            {
+                ExceptionHelpers.HandleGeneralException(exception, "GetAllRooms");
+            }
+            return null;
+        }
     }
 }

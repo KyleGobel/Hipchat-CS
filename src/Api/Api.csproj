@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\HipchatMessageFormat.cs" />
     <Compile Include="Requests\CreateRoomRequest.cs" />
     <Compile Include="Exceptions\HipchatAuthenticationException.cs" />
     <Compile Include="Exceptions\HipchatGeneralException.cs" />
@@ -64,16 +65,14 @@
     <Compile Include="Requests\CreateWebHookRequest.cs" />
     <Compile Include="Requests\SendRoomNotificationRequest.cs" />
     <Compile Include="Responses\HipchatCreateRoomResponse.cs" />
-    <Compile Include="WebExceptionHelpers.cs" />
+    <Compile Include="Responses\HipchatGetAllRoomsResponse.cs" />
+    <Compile Include="ExceptionHelpers.cs" />
+    <Compile Include="Enums\RoomColors.cs" />
+    <Compile Include="Enums\RoomEvent.cs" />
+    <Compile Include="Enums\RoomPrivacy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Models\Models.csproj">
-      <Project>{7f5eda96-c15b-4e1d-8eb8-64af0f872fbf}</Project>
-      <Name>Models</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

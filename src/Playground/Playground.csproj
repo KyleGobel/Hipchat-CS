@@ -54,10 +54,6 @@
       <Project>{6D736BBA-0F24-4219-8683-2FDF196B7D51}</Project>
       <Name>Api</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Models\Models.csproj">
-      <Project>{7f5eda96-c15b-4e1d-8eb8-64af0f872fbf}</Project>
-      <Name>Models</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
