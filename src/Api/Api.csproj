@@ -54,12 +54,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Requests\CreateRoomRequest.cs" />
     <Compile Include="Exceptions\HipchatAuthenticationException.cs" />
     <Compile Include="Exceptions\HipchatGeneralException.cs" />
     <Compile Include="HipchatClient.cs" />
     <Compile Include="HipchatApiConfig.cs" />
     <Compile Include="HipchatEndpoints.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Requests\CreateWebHookRequest.cs" />
+    <Compile Include="Requests\SendRoomNotificationRequest.cs" />
+    <Compile Include="Responses\HipchatCreateRoomResponse.cs" />
+    <Compile Include="WebExceptionHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

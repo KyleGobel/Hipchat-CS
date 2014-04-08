@@ -1,6 +1,6 @@
-﻿namespace HipchatApiV2
+﻿namespace HipchatApiV2.Requests
 {
-    public class SendMessageRequest
+    public class SendRoomNotificationRequest
     {
         public string Message { get; set; }
         public string Color { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace Hipchat.Models
+﻿namespace HipchatCS.Models
 {
     public enum RoomColors
     {
@@ -6,6 +6,7 @@
         Green,
         Purple,
         Gray,
-        Red
+        Red,
+        Random,
     }
 }

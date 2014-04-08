@@ -42,7 +42,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestStuff.cs" />
+    <Compile Include="TheCreateRoomMethod.cs" />
+    <Compile Include="TheSendNotificationMethod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

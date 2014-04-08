@@ -1,4 +1,4 @@
-﻿namespace Hipchat.Models.Requests
+﻿namespace HipchatApiV2.Requests
 {
     public class CreateWebHookRequest
     {

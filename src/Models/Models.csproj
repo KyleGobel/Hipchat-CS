@@ -41,7 +41,6 @@
   <ItemGroup>
     <Compile Include="HipchatMessage.cs" />
     <Compile Include="HipchatMessageFormat.cs" />
-    <Compile Include="Requests\CreateWebHookRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoomColors.cs" />
     <Compile Include="RoomEvent.cs" />
