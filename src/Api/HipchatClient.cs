@@ -69,9 +69,12 @@ namespace HipchatApiV2
                 .FromJson<HipchatGenerateTokenResponse>();
                 return response;
             }
-            catch (WebException exception)
+            catch (Exception exception)
             {
-                throw ExceptionHelpers.HandleWebException(exception, "");
+                if (exception is WebException)
+                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "");
+
+                throw ExceptionHelpers.GeneralExceptionHelper(exception, "GenerateToken");
             }
 
         }
@@ -126,13 +129,12 @@ namespace HipchatApiV2
                         .PostJsonToUrl(request)
                         .FromJson<HipchatCreateRoomResponse>();
             }
-            catch (WebException exception)
-            {
-                throw ExceptionHelpers.HandleWebException(exception, "manage_rooms");
-            }
             catch (Exception exception)
             {
-                ExceptionHelpers.HandleGeneralException(exception, "CreateRoom");
+                if (exception is WebException)
+                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "manage_rooms");
+
+                throw ExceptionHelpers.GeneralExceptionHelper(exception, "CreateRoom");
             }
             return null;
         }
@@ -189,13 +191,12 @@ namespace HipchatApiV2
                             result = true;
                     });
             }
-            catch (WebException exception)
-            {
-                throw ExceptionHelpers.HandleWebException(exception, "send_notification");
-            }
             catch (Exception exception)
             {
-                ExceptionHelpers.HandleGeneralException(exception, "SendNotification");
+                if (exception is WebException)
+                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "send_notification");
+
+                throw ExceptionHelpers.GeneralExceptionHelper(exception, "SendNotification");
             }
             return result;
         }
@@ -223,13 +224,12 @@ namespace HipchatApiV2
             {
                 return endpoint.GetJsonFromUrl().FromJson<HipchatGetAllRoomsResponse>();
             }
-            catch (WebException exception)
-            {
-                throw ExceptionHelpers.HandleWebException(exception, "view_group");
-            }
             catch (Exception exception)
             {
-                ExceptionHelpers.HandleGeneralException(exception, "GetAllRooms");
+                if (exception is WebException)
+                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
+
+                throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllRooms");
             }
             return null;
         }

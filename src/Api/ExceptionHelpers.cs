@@ -8,7 +8,7 @@ namespace HipchatApiV2
 {
     public class ExceptionHelpers
     {
-        public static Exception HandleWebException(WebException exception, string scopeRequired)
+        public static Exception WebExceptionHelper(WebException exception, string scopeRequired)
         {
             if (exception.IsUnauthorized())
                 return new HipchatAuthenticationException(
@@ -37,9 +37,9 @@ namespace HipchatApiV2
             return exception;
         }
 
-        public static void HandleGeneralException(Exception exception, string methodName)
+        public static Exception GeneralExceptionHelper(Exception exception, string methodName)
         {
-            throw new HipchatGeneralException("An unhandled exception was thrown in '{0}'.  See inner exception for details.".Fmt(methodName), exception);
+            return new HipchatGeneralException("An unhandled exception was thrown in '{0}'.  See inner exception for details.".Fmt(methodName), exception);
         }
     }
 }
