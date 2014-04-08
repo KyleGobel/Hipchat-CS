@@ -54,7 +54,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\GrantType.cs" />
     <Compile Include="Enums\HipchatMessageFormat.cs" />
+    <Compile Include="Enums\TokenScope.cs" />
+    <Compile Include="HttpHelpers.cs" />
     <Compile Include="Requests\CreateRoomRequest.cs" />
     <Compile Include="Exceptions\HipchatAuthenticationException.cs" />
     <Compile Include="Exceptions\HipchatGeneralException.cs" />
@@ -63,8 +66,10 @@
     <Compile Include="HipchatEndpoints.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Requests\CreateWebHookRequest.cs" />
+    <Compile Include="Requests\GenerateTokenRequest.cs" />
     <Compile Include="Requests\SendRoomNotificationRequest.cs" />
     <Compile Include="Responses\HipchatCreateRoomResponse.cs" />
+    <Compile Include="Responses\HipchatGenerateTokenResponse.cs" />
     <Compile Include="Responses\HipchatGetAllRoomsResponse.cs" />
     <Compile Include="ExceptionHelpers.cs" />
     <Compile Include="Enums\RoomColors.cs" />

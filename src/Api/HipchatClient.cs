@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net;
+using System.Text;
 using HipchatApiV2.Enums;
 using HipchatApiV2.Requests;
 using HipchatApiV2.Responses;
@@ -21,6 +25,55 @@ namespace HipchatApiV2
         {
             _authToken = authToken ?? HipchatApiConfig.Instance.AuthToken;
             JsConfig.EmitCamelCaseNames = true;
+        }
+
+        public HipchatGenerateTokenResponse GenerateToken(
+            GrantType grantType, 
+            IEnumerable<TokenScope> scopes,
+            string basicAuthUsername = null, 
+            string basicAuthPassword = null, 
+            string username = null,  
+            string code = null, 
+            string redirectUri = null, 
+            string password = null, 
+            string refreshToken = null)
+        {
+            var request = new GenerateTokenRequest
+            {
+                Username = username,
+                Code = code,
+                Grant_Type = grantType,
+                Password = password,
+                Redirect_Uri = redirectUri,
+                Refresh_Token = refreshToken,
+                Scope = string.Join(" ",scopes.Select(x => x.ToString()))
+            };
+
+            Action<HttpWebRequest> requestFilter = x => { };
+            if (!basicAuthUsername.IsEmpty() && !basicAuthPassword.IsEmpty())
+            {
+                var auth = string.Format("{0}:{1}", basicAuthUsername, basicAuthPassword);
+                var encrypted = Convert.ToBase64String(Encoding.ASCII.GetBytes(auth));
+                var creds = string.Format("{0} {1}", "Basic", encrypted);
+                requestFilter = x => x.Headers[HttpRequestHeader.Authorization] = creds;
+            }
+
+
+
+            var endpoint = HipchatEndpoints.GenerateTokenEndpoint;
+            
+            try
+            {
+                var response = endpoint
+                .PostToUrl(request.FormEncodeHipchatRequest(),requestFilter: requestFilter)
+                .FromJson<HipchatGenerateTokenResponse>();
+                return response;
+            }
+            catch (WebException exception)
+            {
+                throw ExceptionHelpers.HandleWebException(exception, "");
+            }
+
         }
 
         /// <summary>
@@ -75,7 +128,7 @@ namespace HipchatApiV2
             }
             catch (WebException exception)
             {
-                ExceptionHelpers.HandleWebException(exception, "manage_rooms");
+                throw ExceptionHelpers.HandleWebException(exception, "manage_rooms");
             }
             catch (Exception exception)
             {
@@ -138,7 +191,7 @@ namespace HipchatApiV2
             }
             catch (WebException exception)
             {
-                ExceptionHelpers.HandleWebException(exception, "send_notification");
+                throw ExceptionHelpers.HandleWebException(exception, "send_notification");
             }
             catch (Exception exception)
             {
@@ -172,7 +225,7 @@ namespace HipchatApiV2
             }
             catch (WebException exception)
             {
-                ExceptionHelpers.HandleWebException(exception, "view_group");
+                throw ExceptionHelpers.HandleWebException(exception, "view_group");
             }
             catch (Exception exception)
             {
