@@ -26,12 +26,14 @@ thus far.
 **Examples**
 
 ```cs
-//will look in app.config for the appSetting 'hipchat_auth_token', or you can pass it in via the constructor
+//will look in app.config for the appSetting 'hipchat_auth_token', 
+//or you can pass it in via the constructor
 var client = new HipchatClient();
 
 //check source or intellisense for overloads
+//create a default room with whoever the api key holder is as owner
 HipchatCreateRoomResponse testRoom = client.CreateRoom("My Test Room");
 
-//send a message to the room
+//send a message to the created room with the green background color
 client.SendNotification(testRoom.Id, "Hello from Api!", RoomColors.Green);
 ```
