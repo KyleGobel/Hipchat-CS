@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using HipchatApiV2.Enums;
-using HipchatApiV2.Exceptions;
 using HipchatApiV2.Requests;
 using HipchatApiV2.Responses;
 using ServiceStack;
@@ -148,6 +147,13 @@ namespace HipchatApiV2
             return result;
         }
 
+        /// <summary>
+        /// List non-archived rooms for this group
+        /// </summary>
+        /// <param name="startIndex">The start index for the result set</param>
+        /// <param name="maxResults">The maximum number of results. Valid length 0-100</param>
+        /// <param name="includeArchived">Filter rooms</param>
+        /// <returns>A HipchatGetAllRoomsResponse</returns>
         public HipchatGetAllRoomsResponse GetAllRooms(int startIndex = 0, int maxResults = 100, bool includeArchived = false)
         {
             if (startIndex > 100)
