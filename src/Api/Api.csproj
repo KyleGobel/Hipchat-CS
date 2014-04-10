@@ -59,7 +59,7 @@
     <Compile Include="Enums\TokenScope.cs" />
     <Compile Include="HttpHelpers.cs" />
     <Compile Include="Requests\CreateRoomRequest.cs" />
-    <Compile Include="Exceptions\HipchatAuthenticationException.cs" />
+    <Compile Include="Exceptions\HipchatWebException.cs" />
     <Compile Include="Exceptions\HipchatGeneralException.cs" />
     <Compile Include="HipchatClient.cs" />
     <Compile Include="HipchatApiConfig.cs" />

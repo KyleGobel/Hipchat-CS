@@ -3,9 +3,9 @@ using System.Net;
 
 namespace HipchatApiV2.Exceptions
 {
-    public class HipchatAuthenticationException : WebException
+    public class HipchatWebException : WebException
     {
-        public HipchatAuthenticationException(string message, Exception innerException)
+        public HipchatWebException(string message, Exception innerException)
             : base(message,innerException)
         {
            
