@@ -27,6 +27,19 @@ namespace HipchatApiV2
             JsConfig.EmitCamelCaseNames = true;
         }
 
+        /// <summary>
+        /// Gets an OAuth token for requested grant type. 
+        /// </summary>
+        /// <param name="grantType">The type of grant request</param>
+        /// <param name="scopes">List of scopes that is requested</param>
+        /// <param name="basicAuthUsername">If you supply this, the basicAuthUsername and basicAuthPassword will be passed as credentials in BasicAuthentication format.  (Needed to generate a token for an addon)</param>
+        /// <param name="basicAuthPassword">If you supply this, the basicAuthUsername and basicAuthPassword will be passed as credentials in BasicAuthentication format. </param>
+        /// <param name="username">The user name to generate a token on behalf of.  Only valid in
+        /// the 'Password' and 'ClientCredentials' grant types.</param>
+        /// <param name="code">The authorization code to exchange for an access token.  Only valid in the 'AuthorizationCode' grant type</param>
+        /// <param name="redirectUri">The Url that was used to generate an authorization code, and it must match that value.  Only valid in the 'AuthorizationCode' grant.</param>
+        /// <param name="password">The user's password to use for authentication when creating a token.  Only valid in the 'Password' grant.</param>
+        /// <param name="refreshToken">The refresh token to use to generate a new access token.  Only valid in the 'RefreshToken' grant.</param>
         public HipchatGenerateTokenResponse GenerateToken(
             GrantType grantType, 
             IEnumerable<TokenScope> scopes,
