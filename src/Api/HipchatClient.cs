@@ -27,6 +27,34 @@ namespace HipchatApiV2
             JsConfig.EmitCamelCaseNames = true;
         }
 
+
+        /// <summary>
+        /// Get room details
+        /// </summary>
+        /// <param name="roomName">The name of the room. Valid length 1-100</param>
+        /// <remarks>Auth required with scope 'view_group'.</remarks>
+        public HipchatGetRoomResponse GetRoom(string roomName)
+        {
+            if (roomName.IsEmpty() || roomName.Length > 100)
+                throw new ArgumentOutOfRangeException(roomName, "Valid Lengths of roomName is 1 to 100 characters.");
+
+            var endpoint = HipchatEndpoints.GetRoomEndpoint(roomName);
+            endpoint = endpoint.AddHipchatAuthentication(_authToken);
+
+            try
+            {
+                return endpoint.GetJsonFromUrl().FromJson<HipchatGetRoomResponse>();
+            }
+            catch (WebException exception)
+            {
+                throw ExceptionHelpers.WebExceptionHelper(exception, "view_group");
+            }
+            catch (Exception exception)
+            {
+                throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetRoom");
+            }
+        }
+
         /// <summary>
         /// Gets an OAuth token for requested grant type. 
         /// </summary>

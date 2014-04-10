@@ -18,7 +18,7 @@ namespace HipchatApiV2.Responses
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public HipchatLinks Links { get; set; }
+        public HipchatLink Links { get; set; }
     }
 
 }

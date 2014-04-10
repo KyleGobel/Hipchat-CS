@@ -17,6 +17,11 @@ namespace HipchatApiV2
             }
             return formEncodedString;
         }
-         
+
+        public static string AddHipchatAuthentication(this string endpoint, string authToken = null)
+        {
+            authToken = authToken ?? HipchatApiConfig.Instance.AuthToken;
+            return endpoint.AddQueryParam("auth_token", authToken);
+        }
     }
 }

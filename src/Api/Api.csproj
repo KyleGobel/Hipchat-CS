@@ -57,6 +57,8 @@
     <Compile Include="Enums\GrantType.cs" />
     <Compile Include="Enums\HipchatMessageFormat.cs" />
     <Compile Include="Enums\TokenScope.cs" />
+    <Compile Include="HipchatUser.cs" />
+    <Compile Include="Responses\HipchatGetRoomResponse.cs" />
     <Compile Include="HttpHelpers.cs" />
     <Compile Include="Requests\CreateRoomRequest.cs" />
     <Compile Include="Exceptions\HipchatWebException.cs" />
