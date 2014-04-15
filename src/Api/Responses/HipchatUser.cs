@@ -1,10 +1,8 @@
-﻿using HipchatApiV2.Responses;
-
-namespace HipchatApiV2
+﻿namespace HipchatApiV2.Responses
 {
     public class HipchatUser
     {
-        public string Mention_Name { get; set; }
+        public string MentionName { get; set; }
         public int Id { get; set; }
         public HipchatLink Link { get; set; }
         public string Name { get; set; }

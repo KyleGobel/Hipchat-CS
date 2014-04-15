@@ -57,7 +57,7 @@
     <Compile Include="Enums\GrantType.cs" />
     <Compile Include="Enums\HipchatMessageFormat.cs" />
     <Compile Include="Enums\TokenScope.cs" />
-    <Compile Include="HipchatUser.cs" />
+    <Compile Include="Responses\HipchatUser.cs" />
     <Compile Include="Responses\HipchatGetRoomResponse.cs" />
     <Compile Include="HttpHelpers.cs" />
     <Compile Include="Requests\CreateRoomRequest.cs" />
@@ -77,6 +77,7 @@
     <Compile Include="Enums\RoomColors.cs" />
     <Compile Include="Enums\RoomEvent.cs" />
     <Compile Include="Enums\RoomPrivacy.cs" />
+    <Compile Include="Responses\HipchatLink.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

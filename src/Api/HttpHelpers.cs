@@ -20,7 +20,7 @@ namespace HipchatApiV2
 
         public static string AddHipchatAuthentication(this string endpoint, string authToken = null)
         {
-            authToken = authToken ?? HipchatApiConfig.Instance.AuthToken;
+            authToken = authToken ?? HipchatApiConfig.AuthToken;
             return endpoint.AddQueryParam("auth_token", authToken);
         }
     }

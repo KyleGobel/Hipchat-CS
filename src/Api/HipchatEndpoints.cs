@@ -10,16 +10,12 @@ namespace HipchatApiV2
         private const string CreateRoomEndpointFormat = "https://api.hipchat.com/v2/room?auth_token={0}";
         public static readonly string GetAllRoomsEndpoint = "https://api.hipchat.com/v2/room";
         public static readonly string GenerateTokenEndpoint = "https://api.hipchat.com/v2/oauth/token";
-        private const string GetRoomEndpointFormat = "https://api.hipchat.com/v2/room/{0}";
+        public static readonly string SendNotificationEndpointFormat = "https://api.hipchat.com/v2/room/{0}/notification";
+        public static readonly string GetRoomEndpointFormat = "https://api.hipchat.com/v2/room/{0}";
 
         public static string CreateWebhookEndpoint(int roomId, string authToken)
         {
             return CreateWebhookEndpointFormat.Fmt(roomId,authToken);
-        }
-
-        public static string GetRoomEndpoint(string roomIdOrName)
-        {
-            return GetRoomEndpointFormat.Fmt(roomIdOrName);
         }
 
         public static string CreateRoomEndpoint(string authToken)

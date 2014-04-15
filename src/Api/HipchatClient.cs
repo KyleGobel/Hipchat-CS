@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -23,27 +24,51 @@ namespace HipchatApiV2
         /// <param name="authToken">the auth token given by hipchat</param>
         public HipchatClient(string authToken = null)
         {
-            _authToken = authToken ?? HipchatApiConfig.Instance.AuthToken;
-            JsConfig.EmitCamelCaseNames = true;
+            _authToken = authToken ?? HipchatApiConfig.AuthToken;
+
+            ConfigureSerializer();
         }
 
+        private void ConfigureSerializer()
+        {
+            JsConfig.EmitLowercaseUnderscoreNames = true;
+            JsConfig.ThrowOnDeserializationError = true;
+            JsConfig.PropertyConvention = PropertyConvention.Lenient;
+            JsConfig<RoomColors>.SerializeFn = colors => colors.ToString().ToLower();
+            JsConfig<HipchatMessageFormat>.SerializeFn = format => format.ToString().ToLower();
+
+        }
+
+        #region Get Room
+        /// <summary>
+        /// Get room details
+        /// </summary>
+        /// <param name="roomId">The id of the room</param>
+        /// <remarks>
+        /// Auth required with scope 'view_group'. https://www.hipchat.com/docs/apiv2/method/get_room
+        /// </remarks>
+        public HipchatGetRoomResponse GetRoom(int roomId)
+        {
+            return GetRoom(roomId.ToString(CultureInfo.InvariantCulture));
+        }
 
         /// <summary>
         /// Get room details
         /// </summary>
         /// <param name="roomName">The name of the room. Valid length 1-100</param>
-        /// <remarks>Auth required with scope 'view_group'.</remarks>
+        /// <remarks>
+        /// Auth required with scope 'view_group'.  https://www.hipchat.com/docs/apiv2/method/get_room
+        /// </remarks>
         public HipchatGetRoomResponse GetRoom(string roomName)
         {
             if (roomName.IsEmpty() || roomName.Length > 100)
                 throw new ArgumentOutOfRangeException(roomName, "Valid Lengths of roomName is 1 to 100 characters.");
-
-            var endpoint = HipchatEndpoints.GetRoomEndpoint(roomName);
-            endpoint = endpoint.AddHipchatAuthentication(_authToken);
-
             try
             {
-                return endpoint.GetJsonFromUrl().FromJson<HipchatGetRoomResponse>();
+                return HipchatEndpoints.GetRoomEndpointFormat.Fmt(roomName)
+                    .AddHipchatAuthentication()
+                    .GetJsonFromUrl()
+                    .FromJson<HipchatGetRoomResponse>();
             }
             catch (WebException exception)
             {
@@ -54,7 +79,7 @@ namespace HipchatApiV2
                 throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetRoom");
             }
         }
-
+        #endregion
         /// <summary>
         /// Gets an OAuth token for requested grant type. 
         /// </summary>
@@ -180,6 +205,7 @@ namespace HipchatApiV2
             return null;
         }
 
+        #region SendNotification
 
         /// <summary>
         /// Send a message to a room
@@ -193,7 +219,7 @@ namespace HipchatApiV2
         public bool SendNotification(int roomId, string message, RoomColors backgroundColor = RoomColors.Yellow,
             bool notify = false, HipchatMessageFormat messageFormat = HipchatMessageFormat.Html)
         {
-            return SendNotification(roomId.ToString(), message, backgroundColor, notify, messageFormat);
+            return SendNotification(roomId.ToString(CultureInfo.InvariantCulture), message, backgroundColor, notify, messageFormat);
         }
 
         /// <summary>
@@ -208,24 +234,27 @@ namespace HipchatApiV2
         public bool SendNotification(string roomName, string message, RoomColors backgroundColor = RoomColors.Yellow,
             bool notify = false, HipchatMessageFormat messageFormat = HipchatMessageFormat.Html)
         {
-            if (message.IsEmpty())
-                throw new ArgumentException("Message cannot be blank", "message");
-            if (message.Length > 10000)
-                throw new ArgumentOutOfRangeException("message", "message length is limited to 10k characters");
-
             var request = new SendRoomNotificationRequest
             {
+                Color = backgroundColor,
                 Message = message,
-                Color = backgroundColor.ToString().ToLower(),
-                Notify = notify,
-                Message_Format = messageFormat.ToString().ToLower()
+                MessageFormat = messageFormat,
+                Notify = notify
             };
 
+            return SendNotification(roomName, request);
+        }
+
+        public bool SendNotification(string roomIdOrName, SendRoomNotificationRequest request)
+        {
+            if (request.Message.IsEmpty() || request.Message.Length > 10000)
+                throw new ArgumentOutOfRangeException("request", "message length must be between 0 and 10k characters");
 
             var result = false;
             try
             {
-                HipchatEndpoints.SendMessageEndpoint(roomName, _authToken)
+                HipchatEndpoints.SendNotificationEndpointFormat.Fmt(roomIdOrName)
+                    .AddHipchatAuthentication()
                     .PostJsonToUrl(request, null, x =>
                     {
                         if (x.StatusCode == HttpStatusCode.Created)
@@ -241,6 +270,7 @@ namespace HipchatApiV2
             }
             return result;
         }
+        #endregion
 
         /// <summary>
         /// List non-archived rooms for this group
