@@ -1,10 +1,12 @@
-﻿namespace HipchatApiV2.Requests
+﻿using HipchatApiV2.Enums;
+
+namespace HipchatApiV2.Requests
 {
     public class CreateRoomRequest
     {
-        public bool Guest_Access { get; set; }
+        public bool GuestAccess { get; set; }
         public string Name { get; set; }
-        public string Owner_User_Id { get; set; }
-        public string Privacy { get; set; }
+        public string OwnerUserId { get; set; }
+        public RoomPrivacy Privacy { get; set; }
     }
 }

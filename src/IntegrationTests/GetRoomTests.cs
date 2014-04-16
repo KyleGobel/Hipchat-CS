@@ -10,7 +10,7 @@ namespace IntegrationTests
     {
         public GetRoomTests()
         {
-            HipchatApiConfig.AuthToken = "2xv9SIieULT3wxNrmlTU3AtyNtLLFupQFsWFhqry";
+            HipchatApiConfig.AuthToken = TestsConfig.AuthToken;
         }
 
         [Fact(DisplayName = "Can get room details by room name")]

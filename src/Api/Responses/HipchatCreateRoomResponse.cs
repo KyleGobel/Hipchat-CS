@@ -3,6 +3,6 @@
     public class HipchatCreateRoomResponse
     {
         public int Id { get; set; } 
-        public HipchatLink Linkses { get; set; }
+        public HipchatLink Links { get; set; }
     }
 }

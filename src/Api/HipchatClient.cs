@@ -36,7 +36,7 @@ namespace HipchatApiV2
             JsConfig.PropertyConvention = PropertyConvention.Lenient;
             JsConfig<RoomColors>.SerializeFn = colors => colors.ToString().ToLower();
             JsConfig<HipchatMessageFormat>.SerializeFn = format => format.ToString().ToLower();
-
+            JsConfig<RoomPrivacy>.SerializeFn = privacy => privacy.ToString().ToLower();
         }
 
         #region Get Room
@@ -166,6 +166,7 @@ namespace HipchatApiV2
             return HipchatEndpoints.CreateWebhookEndpoint(roomId, _authToken).PostJsonToUrl(request);
         }
 
+        #region Create Room
         /// <summary>
         ///  Creates a new room
         /// </summary>
@@ -174,36 +175,51 @@ namespace HipchatApiV2
         /// <param name="ownerUserId">The id, email address, or mention name (beginning with an '@') of
         /// the room's owner.  Defaults to the current user.</param>
         /// <param name="privacy">Whether the room is available for access by other users or not</param>
-        ///<returns>response containing id and link of the created room</returns>
+        /// <returns>response containing id and link of the created room</returns>
+        /// <remarks>
+        /// Auth required with scope 'manage_rooms'. https://api.hipchat.com/v2/room
+        /// </remarks>
         public HipchatCreateRoomResponse CreateRoom(string nameOfRoom, bool guestAccess = false, string ownerUserId = null,
             RoomPrivacy privacy = RoomPrivacy.Public)
         {
-            if (nameOfRoom.IsEmpty() || nameOfRoom.Length >50)
-                throw new ArgumentOutOfRangeException("nameOfRoom", "Name of room must be between 1 and 50 characters.");
-
             var request = new CreateRoomRequest
             {
-                Guest_Access = guestAccess,
+                GuestAccess = guestAccess,
                 Name = nameOfRoom,
-                Owner_User_Id = ownerUserId,
-                Privacy = privacy.ToString().ToLower()
+                OwnerUserId = ownerUserId,
+                Privacy = privacy 
             };
 
+            return CreateRoom(request);
+        }
+
+        /// <summary>
+        ///  Creates a new room
+        /// </summary>
+        /// <returns>response containing id and link of the created room</returns>
+        /// <remarks>
+        /// Auth required with scope 'manage_rooms'. https://api.hipchat.com/v2/room
+        /// </remarks>
+        public HipchatCreateRoomResponse CreateRoom(CreateRoomRequest request)
+        {
+            if (request.Name.IsEmpty() || request.Name.Length >50)
+                throw new ArgumentOutOfRangeException("request", "Name of room must be between 1 and 50 characters.");
             try
             {
-                return HipchatEndpoints.CreateRoomEndpoint(_authToken)
-                        .PostJsonToUrl(request)
-                        .FromJson<HipchatCreateRoomResponse>();
+                return HipchatEndpoints.CreateRoomEndpoint
+                    .AddHipchatAuthentication()
+                    .PostJsonToUrl(request)
+                    .FromJson<HipchatCreateRoomResponse>();
             }
             catch (Exception exception)
             {
-                if (exception is WebException)
+                 if (exception is WebException)
                     throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "manage_rooms");
 
-                throw ExceptionHelpers.GeneralExceptionHelper(exception, "CreateRoom");
+                throw ExceptionHelpers.GeneralExceptionHelper(exception, "CreateRoom");               
             }
-            return null;
         }
+        #endregion
 
         #region SendNotification
 
@@ -216,6 +232,9 @@ namespace HipchatApiV2
         /// <param name="notify">if the message should notify</param>
         /// <param name="messageFormat">the format of the message</param>
         /// <returns>true if the message was sucessfully sent</returns>
+        /// <remarks>
+        /// Auth required with scope 'view_group'. https://www.hipchat.com/docs/apiv2/method/send_room_notification
+        /// </remarks>
         public bool SendNotification(int roomId, string message, RoomColors backgroundColor = RoomColors.Yellow,
             bool notify = false, HipchatMessageFormat messageFormat = HipchatMessageFormat.Html)
         {
@@ -231,6 +250,9 @@ namespace HipchatApiV2
         /// <param name="notify">if the message should notify</param>
         /// <param name="messageFormat">the format of the message</param>
         /// <returns>true if the message was sucessfully sent</returns>
+        /// <remarks>
+        /// Auth required with scope 'view_group'. https://www.hipchat.com/docs/apiv2/method/send_room_notification
+        /// </remarks>
         public bool SendNotification(string roomName, string message, RoomColors backgroundColor = RoomColors.Yellow,
             bool notify = false, HipchatMessageFormat messageFormat = HipchatMessageFormat.Html)
         {
@@ -245,7 +267,30 @@ namespace HipchatApiV2
             return SendNotification(roomName, request);
         }
 
-        public bool SendNotification(string roomIdOrName, SendRoomNotificationRequest request)
+        /// <summary>
+        /// Send a message to a room
+        /// </summary>
+        /// <param name="roomId">The id of the room</param>
+        /// <param name="request">The request containing the info about the notification to send</param>
+        /// <returns>true if the message successfully sent</returns>
+        /// <remarks>
+        /// Auth required with scope 'view_group'. https://www.hipchat.com/docs/apiv2/method/send_room_notification
+        /// </remarks>
+        public bool SendNotification(int roomId, SendRoomNotificationRequest request)
+        {
+            return SendNotification(roomId.ToString(), request);
+        }
+
+        /// <summary>
+        /// Send a message to a room
+        /// </summary>
+        /// <param name="roomName">The id of the room</param>
+        /// <param name="request">The request containing the info about the notification to send</param>
+        /// <returns>true if the message successfully sent</returns>
+        /// <remarks>
+        /// Auth required with scope 'view_group'. https://www.hipchat.com/docs/apiv2/method/send_room_notification
+        /// </remarks>
+        public bool SendNotification(string roomName, SendRoomNotificationRequest request)
         {
             if (request.Message.IsEmpty() || request.Message.Length > 10000)
                 throw new ArgumentOutOfRangeException("request", "message length must be between 0 and 10k characters");
@@ -253,11 +298,12 @@ namespace HipchatApiV2
             var result = false;
             try
             {
-                HipchatEndpoints.SendNotificationEndpointFormat.Fmt(roomIdOrName)
+                HipchatEndpoints.SendNotificationEndpointFormat
+                    .Fmt(roomName)
                     .AddHipchatAuthentication()
                     .PostJsonToUrl(request, null, x =>
                     {
-                        if (x.StatusCode == HttpStatusCode.Created)
+                        if (x.StatusCode == HttpStatusCode.NoContent)
                             result = true;
                     });
             }
@@ -267,6 +313,54 @@ namespace HipchatApiV2
                     throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "send_notification");
 
                 throw ExceptionHelpers.GeneralExceptionHelper(exception, "SendNotification");
+            }
+            return result;
+        }
+        #endregion
+
+        #region Delete Room
+        /// <summary>
+        /// Delets a room and kicks the current particpants.
+        /// </summary>
+        /// <param name="roomId">Id of the room.</param>
+        /// <returns>true if the room was successfully deleted</returns>
+        /// <remarks>
+        /// Authentication required with scope 'manage_rooms'. https://www.hipchat.com/docs/apiv2/method/delete_room
+        /// </remarks>
+        public bool DeleteRoom(int roomId)
+        {
+            return DeleteRoom(roomId.ToString(CultureInfo.InvariantCulture));
+        }
+
+        /// <summary>
+        /// Delets a room and kicks the current particpants.
+        /// </summary>
+        /// <param name="roomName">Name of the room.</param>
+        /// <returns>true if the room was successfully deleted</returns>
+        /// <remarks>
+        /// Authentication required with scope 'manage_rooms'. https://www.hipchat.com/docs/apiv2/method/delete_room
+        /// </remarks>
+        public bool DeleteRoom(string roomName)
+        {
+            if (roomName.IsEmpty() || roomName.Length > 100)
+                throw new ArgumentOutOfRangeException("roomName", "Valid roomName length is 1-100.");
+            var result = false;
+            try
+            {
+                HipchatEndpoints.DeleteRoomEndpointFormat.Fmt(roomName)
+                    .AddHipchatAuthentication()
+                    .DeleteFromUrl(responseFilter: x =>
+                    {
+                        if (x.StatusCode == HttpStatusCode.NoContent)
+                            result = true;
+                    });
+            }
+            catch (Exception exception)
+            {
+                if (exception is WebException)
+                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "manage_rooms");
+
+                throw ExceptionHelpers.GeneralExceptionHelper(exception, "DeleteRoom");     
             }
             return result;
         }
