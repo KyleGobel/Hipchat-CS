@@ -11,7 +11,6 @@ namespace HipchatApiV2.Responses
         public List<HipchatGetAllRoomsResponseItems> Items { get; set; } 
         public int StartIndex { get; set; } 
         public int MaxResults { get; set; }
-        
     }
 
     public class HipchatGetAllRoomsResponseItems

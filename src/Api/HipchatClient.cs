@@ -145,16 +145,19 @@ namespace HipchatApiV2
 
         }
 
+        #region CreateWebHook
         /// <summary>
         /// Creates a webhook
         /// </summary>
-        /// <param name="roomId">the room Id to create a hook for</param>
-        /// <param name="url">the url to post the created events to</param>
-        /// <param name="pattern">optional regex pattern</param>
-        /// <param name="eventType">the type of <seealso cref="RoomEvent">RoomEvent</seealso></param>
-        /// <param name="name">name of the hook</param>
-        /// <returns></returns>
-        public string CreateWebHook(int roomId, string url, string pattern, RoomEvent eventType, string name)
+        /// <param name="roomId">the id of the room</param>
+        /// <param name="url">the url to send the webhook POST to</param>
+        /// <param name="pattern">optional regex pattern to match against messages.  Only applicable for message events</param>
+        /// <param name="eventType">The event to listen for</param>
+        /// <param name="name">label for this webhook</param>
+        /// <remarks>
+        /// Auth required with scope 'admin_room'. https://www.hipchat.com/docs/apiv2/method/create_webhook
+        /// </remarks>
+        public CreateWebHookResponse CreateWebHook(int roomId, string url, string pattern, RoomEvent eventType, string name)
         {
             var request = new CreateWebHookRequest
             {
@@ -163,8 +166,58 @@ namespace HipchatApiV2
                 Url = url,
                 Name = name
             };
-            return HipchatEndpoints.CreateWebhookEndpoint(roomId, _authToken).PostJsonToUrl(request);
+            return CreateWebHook(roomId.ToString(CultureInfo.InvariantCulture), request);
         }
+
+        /// <summary>
+        /// Creates a webhook
+        /// </summary>
+        /// <param name="roomName">the name of the room</param>
+        /// <param name="url">the url to send the webhook POST to</param>
+        /// <param name="pattern">optional regex pattern to match against messages.  Only applicable for message events</param>
+        /// <param name="eventType">The event to listen for</param>
+        /// <param name="name">label for this webhook</param>
+        /// <remarks>
+        /// Auth required with scope 'admin_room'. https://www.hipchat.com/docs/apiv2/method/create_webhook
+        /// </remarks>
+        public CreateWebHookResponse CreateWebHook(string roomName, string url, string pattern, RoomEvent eventType, string name)
+        {
+            var request = new CreateWebHookRequest
+            {
+                Event = eventType,
+                Pattern = pattern,
+                Url = url,
+                Name = name
+            };
+            return CreateWebHook(roomName, request);
+        }
+
+        /// <summary>
+        /// Creates a webhook
+        /// </summary>
+        /// <param name="roomName">the name of the room</param>
+        /// <param name="request">the request to send</param>
+        /// <remarks>
+        /// Auth required with scope 'admin_room'. https://www.hipchat.com/docs/apiv2/method/create_webhook
+        /// </remarks>
+        public CreateWebHookResponse CreateWebHook(string roomName, CreateWebHookRequest request)
+        {
+            try
+            {
+                return HipchatEndpoints.CreateWebhookEndpointFormat.Fmt(roomName)
+                    .AddHipchatAuthentication()
+                    .PostJsonToUrl(request)
+                    .FromJson<CreateWebHookResponse>();
+            }
+            catch (Exception exception)
+            {
+                if (exception is WebException)
+                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
+
+                throw ExceptionHelpers.GeneralExceptionHelper(exception, "CreateWebHook");
+            }
+        }
+        #endregion
 
         #region Create Room
         /// <summary>
@@ -398,5 +451,11 @@ namespace HipchatApiV2
             }
             return null;
         }
+    }
+
+    public class CreateWebHookResponse
+    {
+        public int Id { get; set; }
+        public HipchatLink Links { get; set; }
     }
 }
