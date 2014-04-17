@@ -37,6 +37,13 @@ namespace HipchatApiV2
             JsConfig<RoomColors>.SerializeFn = colors => colors.ToString().ToLower();
             JsConfig<HipchatMessageFormat>.SerializeFn = format => format.ToString().ToLower();
             JsConfig<RoomPrivacy>.SerializeFn = privacy => privacy.ToString().ToLower();
+            JsConfig<RoomEvent>.DeSerializeFn = s =>
+            {
+                var pascalCase = s.ToTitleCase();
+                RoomEvent e;
+                RoomEvent.TryParse(s, out e);
+                return e;
+            };
         }
 
         #region Get Room
@@ -131,8 +138,8 @@ namespace HipchatApiV2
             try
             {
                 var response = endpoint
-                .PostToUrl(request.FormEncodeHipchatRequest(),requestFilter: requestFilter)
-                .FromJson<HipchatGenerateTokenResponse>();
+                    .PostToUrl(request.FormEncodeHipchatRequest(),requestFilter: requestFilter)
+                    .FromJson<HipchatGenerateTokenResponse>();
                 return response;
             }
             catch (Exception exception)
@@ -219,7 +226,7 @@ namespace HipchatApiV2
         }
         #endregion
 
-        #region Create Room
+        #region CreateRoom
         /// <summary>
         ///  Creates a new room
         /// </summary>
@@ -371,7 +378,7 @@ namespace HipchatApiV2
         }
         #endregion
 
-        #region Delete Room
+        #region DeleteRoom
         /// <summary>
         /// Delets a room and kicks the current particpants.
         /// </summary>
@@ -419,6 +426,7 @@ namespace HipchatApiV2
         }
         #endregion
 
+        #region GetAllRooms
         /// <summary>
         /// List non-archived rooms for this group
         /// </summary>
@@ -426,6 +434,9 @@ namespace HipchatApiV2
         /// <param name="maxResults">The maximum number of results. Valid length 0-100</param>
         /// <param name="includeArchived">Filter rooms</param>
         /// <returns>A HipchatGetAllRoomsResponse</returns>
+        /// <remarks>
+        /// Auth required with scope 'view_group'. https://www.hipchat.com/docs/apiv2/method/get_all_rooms
+        /// </remarks>
         public HipchatGetAllRoomsResponse GetAllRooms(int startIndex = 0, int maxResults = 100, bool includeArchived = false)
         {
             if (startIndex > 100)
@@ -433,14 +444,15 @@ namespace HipchatApiV2
             if (maxResults > 100)
                 throw new ArgumentOutOfRangeException("maxResults", "maxResults must be between 0 and 100");
 
-            var endpoint = HipchatEndpoints.GetAllRoomsEndpoint
-                .AddQueryParam("start-index", startIndex)
-                .AddQueryParam("max-results", maxResults)
-                .AddQueryParam("include-archived", includeArchived)
-                .AddQueryParam("auth_token", _authToken);
             try
             {
-                return endpoint.GetJsonFromUrl().FromJson<HipchatGetAllRoomsResponse>();
+                return HipchatEndpoints.GetAllRoomsEndpoint
+                    .AddQueryParam("start-index", startIndex)
+                    .AddQueryParam("max-results", maxResults)
+                    .AddQueryParam("include-archived", includeArchived)
+                    .AddHipchatAuthentication()
+                    .GetJsonFromUrl()
+                    .FromJson<HipchatGetAllRoomsResponse>();
             }
             catch (Exception exception)
             {
@@ -449,13 +461,39 @@ namespace HipchatApiV2
 
                 throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllRooms");
             }
-            return null;
         }
-    }
+        #endregion
 
-    public class CreateWebHookResponse
-    {
-        public int Id { get; set; }
-        public HipchatLink Links { get; set; }
+        #region GetAllWebhooks
+        /// <summary>
+        /// Gets all webhooks for this room
+        /// </summary>
+        /// <param name="roomName">The name of the room</param>
+        /// <param name="startIndex">The start index for the result set</param>
+        /// <param name="maxResults">The maximum number of results</param>
+        /// <returns>A GetAllWebhooks Response</returns>
+        /// <remarks>
+        /// Auth required, with scope 'admin_room'. https://www.hipchat.com/docs/apiv2/method/get_all_webhooks
+        /// </remarks>
+        public HipchatGetAllWebhooksResponse GetAllWebhooks(string roomName, int startIndex = 0, int maxResults = 0)
+        {
+            try
+            {
+                return HipchatEndpoints.GetAllWebhooksEndpointFormat.Fmt(roomName)
+                    .AddQueryParam("start-index", startIndex)
+                    .AddQueryParam("max-results", maxResults)
+                    .AddHipchatAuthentication()
+                    .GetJsonFromUrl()
+                    .FromJson<HipchatGetAllWebhooksResponse>();
+            }
+            catch (Exception exception)
+            {
+                if (exception is WebException)
+                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
+
+                throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllWebhooks");
+            }
+        }
+        #endregion
     }
 }

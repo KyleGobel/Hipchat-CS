@@ -54,6 +54,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Responses\HipchatGetAllWebhooksItems.cs" />
+    <Compile Include="Responses\HipchatGetAllWebhooksResponse.cs" />
+    <Compile Include="Responses\CreateWebHookResponse.cs" />
     <Compile Include="Enums\GrantType.cs" />
     <Compile Include="Enums\HipchatMessageFormat.cs" />
     <Compile Include="Enums\TokenScope.cs" />
