@@ -19,6 +19,7 @@ Finished Methods
 - GetAllRooms
 - SendNotification
 - CreateWebHook
+- GetAllWebhooks
 
 
 All methods have several optional paramaters and or overloads, fully documented.  Check intellisense.
