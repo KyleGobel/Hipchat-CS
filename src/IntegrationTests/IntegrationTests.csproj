@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ServiceStack.Text, Version=4.0.18.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ServiceStack.Text.4.0.18\lib\net40\ServiceStack.Text.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,11 +48,13 @@
   <ItemGroup>
     <Compile Include="CreateRoomTests.cs" />
     <Compile Include="DeleteRoomTests.cs" />
+    <Compile Include="GetAllUsersTests.cs" />
     <Compile Include="GetAllWebhooks.cs" />
     <Compile Include="GetRoomTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SendRoomNotification.cs" />
     <Compile Include="TestsConfig.cs" />
+    <Compile Include="UpdateRoomTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Api\Api.csproj">

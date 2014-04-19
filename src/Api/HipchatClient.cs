@@ -32,11 +32,14 @@ namespace HipchatApiV2
         private void ConfigureSerializer()
         {
             JsConfig.EmitLowercaseUnderscoreNames = true;
-            JsConfig.ThrowOnDeserializationError = true;
             JsConfig.PropertyConvention = PropertyConvention.Lenient;
             JsConfig<RoomColors>.SerializeFn = colors => colors.ToString().ToLower();
             JsConfig<HipchatMessageFormat>.SerializeFn = format => format.ToString().ToLower();
-            JsConfig<RoomPrivacy>.SerializeFn = privacy => privacy.ToString().ToLower();
+            JsConfig<RoomPrivacy>.SerializeFn = p =>
+            {
+                var value = p.ToString().ToLowercaseUnderscore();
+                return value;
+            };
             JsConfig<RoomEvent>.SerializeFn = rmEvent => rmEvent.ToString().ToLowercaseUnderscore();
             JsConfig<RoomEvent>.DeSerializeFn = s =>
             {
@@ -153,6 +156,32 @@ namespace HipchatApiV2
 
         }
 
+        #region GetAllUsers
+
+        public HipchatGetAllUsersResponse GetAllUsers(int startIndex = 0, int maxResults = 100, bool includeGuests = false,
+            bool includeDeleted = false)
+        {
+            try
+            {
+                return HipchatEndpoints.GetAllUsersEndpoint
+                    .AddHipchatAuthentication()
+                    .AddQueryParam("start-index", startIndex)
+                    .AddQueryParam("max-results", maxResults)
+                    .AddQueryParam("include-guests", includeGuests)
+                    .AddQueryParam("include-deleted", includeDeleted)
+                    .GetJsonFromUrl()
+                    .FromJson<HipchatGetAllUsersResponse>();
+            }
+            catch (Exception exception)
+            {
+                if (exception is WebException)
+                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
+
+                throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllUsers");
+            }
+        }
+
+        #endregion
         #region UpdateRoom
         /// <summary>
         /// Updates a room
@@ -182,7 +211,8 @@ namespace HipchatApiV2
             var result = false;
             try
             {
-                HipchatEndpoints.UpdateRoomFormat.Fmt(roomName)
+             
+                HipchatEndpoints.UpdateRoomEndpoingFormat.Fmt(roomName)
                     .AddHipchatAuthentication()
                     .PutJsonToUrl(data: request, responseFilter: r =>
                     {
@@ -579,7 +609,7 @@ namespace HipchatApiV2
             var result = false;
             try
             {
-                HipchatEndpoints.DeleteWebhookFormat.Fmt(roomName, webHookId)
+                HipchatEndpoints.DeleteWebhookEndpointFormat.Fmt(roomName, webHookId)
                     .AddHipchatAuthentication()
                     .DeleteFromUrl(responseFilter: request =>
                     {
@@ -592,7 +622,7 @@ namespace HipchatApiV2
                 if (exception is WebException)
                     throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
 
-                throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllWebhooks");
+                throw ExceptionHelpers.GeneralExceptionHelper(exception, "DeleteWebhook");
             }
             return result;
         }

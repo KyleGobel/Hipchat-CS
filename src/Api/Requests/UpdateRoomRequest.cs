@@ -5,6 +5,11 @@ namespace HipchatApiV2.Requests
 {
     public class UpdateRoomRequest
     {
+        public UpdateRoomRequest()
+        {
+            Owner = new HipchatUser {Id = 0};
+            Topic = "";
+        }
         public string Name { get; set; }
         public RoomPrivacy Privacy { get; set; }
         public bool IsArchived { get; set; }
