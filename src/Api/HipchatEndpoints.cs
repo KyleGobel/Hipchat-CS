@@ -14,5 +14,8 @@ namespace HipchatApiV2
         public static readonly string GetRoomEndpointFormat = "https://api.hipchat.com/v2/room/{0}";
         public static readonly string DeleteRoomEndpointFormat = "https://api.hipchat.com/v2/room/{0}";
         public static readonly string GetAllWebhooksEndpointFormat = "https://api.hipchat.com/v2/room/{0}/webhook";
+        public static readonly string DeleteWebhookFormat = "https://api.hipchat.com/v2/room/{0}/webook/{1}";
+
+        public static readonly string UpdateRoomFormat = "https://api.hipchat.com/v2/room/{0}";
     }
 }

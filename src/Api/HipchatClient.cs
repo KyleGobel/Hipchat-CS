@@ -37,6 +37,7 @@ namespace HipchatApiV2
             JsConfig<RoomColors>.SerializeFn = colors => colors.ToString().ToLower();
             JsConfig<HipchatMessageFormat>.SerializeFn = format => format.ToString().ToLower();
             JsConfig<RoomPrivacy>.SerializeFn = privacy => privacy.ToString().ToLower();
+            JsConfig<RoomEvent>.SerializeFn = rmEvent => rmEvent.ToString().ToLowercaseUnderscore();
             JsConfig<RoomEvent>.DeSerializeFn = s =>
             {
                 var pascalCase = s.ToTitleCase();
@@ -151,6 +152,57 @@ namespace HipchatApiV2
             }
 
         }
+
+        #region UpdateRoom
+        /// <summary>
+        /// Updates a room
+        /// </summary>
+        /// <param name="roomId">The room id</param>
+        /// <param name="request">The request to send</param>
+        /// <returns>true if the call was successful</returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_room'. https://www.hipchat.com/docs/apiv2/method/update_room 
+        /// </remarks>
+        public bool UpdateRoom(int roomId, UpdateRoomRequest request)
+        {
+            return UpdateRoom(roomId.ToString(CultureInfo.InvariantCulture), request);
+        }
+
+        /// <summary>
+        /// Updates a room
+        /// </summary>
+        /// <param name="roomName">The room name</param>
+        /// <param name="request">The request to send</param>
+        /// <returns>true if the call was successful</returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_room'. https://www.hipchat.com/docs/apiv2/method/update_room 
+        /// </remarks>
+        public bool UpdateRoom(string roomName, UpdateRoomRequest request)
+        {
+            var result = false;
+            try
+            {
+                HipchatEndpoints.UpdateRoomFormat.Fmt(roomName)
+                    .AddHipchatAuthentication()
+                    .PutJsonToUrl(data: request, responseFilter: r =>
+                    {
+                        if (r.StatusCode == HttpStatusCode.NoContent)
+                        {
+                            result = true;
+                        }
+                    });
+
+            }
+            catch (Exception exception)
+            {
+                if (exception is WebException)
+                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
+
+                throw ExceptionHelpers.GeneralExceptionHelper(exception, "Updateroom");
+            }
+            return result;
+        }
+        #endregion
 
         #region CreateWebHook
         /// <summary>
@@ -494,6 +546,70 @@ namespace HipchatApiV2
                 throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllWebhooks");
             }
         }
+
+
+        /// <summary>
+        /// Gets all webhooks for this room
+        /// </summary>
+        /// <param name="roomId">The id of the room</param>
+        /// <param name="startIndex">The start index for the result set</param>
+        /// <param name="maxResults">The maximum number of results</param>
+        /// <returns>A GetAllWebhooks Response</returns>
+        /// <remarks>
+        /// Auth required, with scope 'admin_room'. https://www.hipchat.com/docs/apiv2/method/get_all_webhooks
+        /// </remarks>
+        public HipchatGetAllWebhooksResponse GetAllWebhooks(int roomId, int startIndex = 0, int maxResults = 0)
+        {
+            return GetAllWebhooks(roomId.ToString(CultureInfo.InvariantCulture), startIndex, maxResults);
+        }
         #endregion
+
+        #region DeleteWebhook
+        /// <summary>
+        /// Deletes a webhook
+        /// </summary>
+        /// <param name="roomName">The name of the room</param>
+        /// <param name="webHookId">The id of the webhook</param>
+        /// <returns>true if the request was successful</returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_room'. https://www.hipchat.com/docs/apiv2/method/delete_webhook
+        /// </remarks>
+        public bool DeleteWebhook(string roomName, int webHookId)
+        {
+            var result = false;
+            try
+            {
+                HipchatEndpoints.DeleteWebhookFormat.Fmt(roomName, webHookId)
+                    .AddHipchatAuthentication()
+                    .DeleteFromUrl(responseFilter: request =>
+                    {
+                        if (request.StatusCode == HttpStatusCode.NoContent)
+                            result = true;
+                    });
+            }
+            catch (Exception exception)
+            {
+                if (exception is WebException)
+                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
+
+                throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllWebhooks");
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes a webhook
+        /// </summary>
+        /// <param name="roomId">The id of the room</param>
+        /// <param name="webHookId">The id of the webhook</param>
+        /// <returns>true if the request was successful</returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_room'. https://www.hipchat.com/docs/apiv2/method/delete_webhook
+        /// </remarks>
+        public bool DeleteWebhook(int roomId, int webHookId)
+        {
+            return DeleteWebhook(roomId.ToString(CultureInfo.InvariantCulture), webHookId);
+        }
+#endregion
     }
 }

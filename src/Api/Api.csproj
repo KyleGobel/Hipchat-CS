@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Requests\UpdateRoomRequest.cs" />
     <Compile Include="Responses\HipchatGetAllWebhooksItems.cs" />
     <Compile Include="Responses\HipchatGetAllWebhooksResponse.cs" />
     <Compile Include="Responses\CreateWebHookResponse.cs" />
