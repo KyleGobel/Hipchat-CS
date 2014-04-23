@@ -41,6 +41,7 @@ namespace HipchatApiV2
                 return value;
             };
             JsConfig<RoomEvent>.SerializeFn = rmEvent => rmEvent.ToString().ToLowercaseUnderscore();
+            JsConfig<GrantType>.SerializeFn = grant => grant.ToString().ToLowercaseUnderscore();
             JsConfig<RoomEvent>.DeSerializeFn = s =>
             {
                 var pascalCase = s.ToTitleCase();
@@ -119,10 +120,10 @@ namespace HipchatApiV2
             {
                 Username = username,
                 Code = code,
-                Grant_Type = grantType,
+                GrantType = grantType,
                 Password = password,
-                Redirect_Uri = redirectUri,
-                Refresh_Token = refreshToken,
+                RedirectUri = redirectUri,
+                RefreshToken = refreshToken,
                 Scope = string.Join(" ",scopes.Select(x => x.ToString()))
             };
 
@@ -138,7 +139,8 @@ namespace HipchatApiV2
 
 
             var endpoint = HipchatEndpoints.GenerateTokenEndpoint;
-            
+
+            var form = request.SerializeAndFormat();
             try
             {
                 var response = endpoint
