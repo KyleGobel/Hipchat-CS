@@ -9,18 +9,7 @@ namespace Playground
     [Trait("SendNotification", "")]
     public class TheSendNotificationMethod
     {
-        [Fact (DisplayName = "Throws a AuthenticationException when given an invalid Api Token")]
-        public void ThrowsAuthErrors()
-        {
-            var client = new HipchatClient("invalid Api token");
-
-            //Assert.Throws<HipchatWebException>(() =>
-            //{
-                client.SendNotification("1", "won't work");
-            //});
-        }
-
-        [Fact]
+           [Fact]
         public void GenerateTokenExample()
         {
             var client = new HipchatClient();
