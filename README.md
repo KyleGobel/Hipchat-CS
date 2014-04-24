@@ -12,15 +12,20 @@ Install-Package Hipchat-CS
 **Work in progress**
 
 Finished Methods
-
+- SetTopic
+- GetRoom
+- GenerateToken
+- DeleteRoom
+- UpdateRoom
+- DeleteWebhook
 - CreateRoom
 - GetAllRooms
 - SendNotification
 - CreateWebHook
+- GetAllWebhooks
+- GetAllUsers
 
-
-All methods have several optional paramaters, check intellisense or source for more usage.  These methods fully supported
-thus far.
+All methods have several optional paramaters and or overloads, fully documented.  Check intellisense.
 
 
 **Examples**
@@ -36,4 +41,9 @@ HipchatCreateRoomResponse testRoom = client.CreateRoom("My Test Room");
 
 //send a message to the created room with the green background color
 client.SendNotification(testRoom.Id, "Hello from Api!", RoomColors.Green);
+
+//delete the room, kicking everyone out
+client.DeleteRoom(testRoom.Id);
 ```
+
+For more examples check the IntegrationTests project files
