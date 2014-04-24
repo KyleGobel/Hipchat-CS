@@ -1,5 +1,5 @@
 ﻿using System;
-using ServiceStack.Configuration;
+using System.Configuration;
 
 namespace HipchatApiV2
 {
@@ -7,7 +7,7 @@ namespace HipchatApiV2
     {
         static HipchatApiConfig()
         {
-            AuthToken = ConfigUtils.GetAppSetting("hipchat_auth_token", "");
+            AuthToken = ConfigurationManager.AppSettings["hipchat_auth_token"] ??  "";
         }
 
         public static string AuthToken { get; set; }
