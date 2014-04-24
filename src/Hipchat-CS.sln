@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+VisualStudioVersion = 12.0.30324.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{6D736BBA-0F24-4219-8683-2FDF196B7D51}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "Playground\Playground.csproj", "{E393FD0E-D410-4C25-81BA-1997E2704706}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{42098416-3155-4D43-B082-3E9C61D22326}"
 EndProject
@@ -19,10 +17,6 @@ Global
 		{6D736BBA-0F24-4219-8683-2FDF196B7D51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D736BBA-0F24-4219-8683-2FDF196B7D51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D736BBA-0F24-4219-8683-2FDF196B7D51}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E393FD0E-D410-4C25-81BA-1997E2704706}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E393FD0E-D410-4C25-81BA-1997E2704706}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E393FD0E-D410-4C25-81BA-1997E2704706}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E393FD0E-D410-4C25-81BA-1997E2704706}.Release|Any CPU.Build.0 = Release|Any CPU
 		{42098416-3155-4D43-B082-3E9C61D22326}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{42098416-3155-4D43-B082-3E9C61D22326}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42098416-3155-4D43-B082-3E9C61D22326}.Release|Any CPU.ActiveCfg = Release|Any CPU
