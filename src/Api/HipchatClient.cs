@@ -184,6 +184,7 @@ namespace HipchatApiV2
         }
 
         #endregion
+
         #region UpdateRoom
         /// <summary>
         /// Updates a room
@@ -643,5 +644,61 @@ namespace HipchatApiV2
             return DeleteWebhook(roomId.ToString(CultureInfo.InvariantCulture), webHookId);
         }
 #endregion
+
+        #region SetTopic
+        /// <summary>
+        /// Set a room's topic.  Useful for displaying statistics, important links, server status, you name it!
+        /// </summary>
+        /// <param name="roomName">The name of the room</param>
+        /// <param name="topic">The topic body. (Valid length 0 - 250)</param>
+        /// <returns>true if the call succeeded.  There may be slight delay before topic change appears in the room </returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_room'.
+        /// https://www.hipchat.com/docs/apiv2/method/set_topic
+        /// </remarks>
+        public bool SetTopic(string roomName, string topic)
+        {
+            if (topic == null || topic.Length > 250)
+                throw new ArgumentOutOfRangeException("topic", "Valid length is 0 - 250 characters");
+
+            var result = false;
+            try
+            {
+                HipchatEndpoints.SetTopicEnpdointFormat
+                    .Fmt(roomName)
+                    .AddHipchatAuthentication()
+                    .PutJsonToUrl(topic, responseFilter: resp =>
+                {
+                    if (resp.StatusCode == HttpStatusCode.NoContent)
+                        result = true;
+                });
+
+            }
+            catch (Exception exception)
+            {
+                if (exception is WebException)
+                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
+
+                throw ExceptionHelpers.GeneralExceptionHelper(exception, "SetTopic");
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Set a room's topic.  Useful for displaying statistics, important links, server status, you name it!
+        /// </summary>
+        /// <param name="roomId">The id of the room</param>
+        /// <param name="topic">The topic body. (Valid length 0 - 250)</param>
+        /// <returns>true if the call succeeded.  There may be slight delay before topic change appears in the room </returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_room'.
+        /// https://www.hipchat.com/docs/apiv2/method/set_topic
+        /// </remarks>
+        public bool SetTopic(int roomId, string topic)
+        {
+            return SetTopic(roomId.ToString(CultureInfo.InvariantCulture), topic);
+        }
+
+        #endregion
     }
 }
