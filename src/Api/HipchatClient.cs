@@ -31,8 +31,6 @@ namespace HipchatApiV2
 
         private void ConfigureSerializer()
         {
-            JsConfig.EmitLowercaseUnderscoreNames = true;
-            JsConfig.PropertyConvention = PropertyConvention.Lenient;
             JsConfig<RoomColors>.SerializeFn = colors => colors.ToString().ToLower();
             JsConfig<HipchatMessageFormat>.SerializeFn = format => format.ToString().ToLower();
             JsConfig<RoomPrivacy>.SerializeFn = p =>
@@ -49,6 +47,15 @@ namespace HipchatApiV2
                 RoomEvent.TryParse(s, out e);
                 return e;
             };
+        }
+        private JsConfigScope JsonSerializerConfigScope()
+        {
+            return JsConfig.With(
+                emitLowercaseUnderscoreNames: true, 
+                //have to set this to false -- issue in SS
+                emitCamelCaseNames: false,
+                propertyConvention: PropertyConvention.Lenient);
+
         }
 
         #region Get Room
@@ -73,22 +80,25 @@ namespace HipchatApiV2
         /// </remarks>
         public HipchatGetRoomResponse GetRoom(string roomName)
         {
-            if (roomName.IsEmpty() || roomName.Length > 100)
-                throw new ArgumentOutOfRangeException(roomName, "Valid Lengths of roomName is 1 to 100 characters.");
-            try
+            using (JsonSerializerConfigScope())
             {
-                return HipchatEndpoints.GetRoomEndpointFormat.Fmt(roomName)
-                    .AddHipchatAuthentication()
-                    .GetJsonFromUrl()
-                    .FromJson<HipchatGetRoomResponse>();
-            }
-            catch (WebException exception)
-            {
-                throw ExceptionHelpers.WebExceptionHelper(exception, "view_group");
-            }
-            catch (Exception exception)
-            {
-                throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetRoom");
+                if (roomName.IsEmpty() || roomName.Length > 100)
+                    throw new ArgumentOutOfRangeException(roomName, "Valid Lengths of roomName is 1 to 100 characters.");
+                try
+                {
+                    return HipchatEndpoints.GetRoomEndpointFormat.Fmt(roomName)
+                        .AddHipchatAuthentication()
+                        .GetJsonFromUrl()
+                        .FromJson<HipchatGetRoomResponse>();
+                }
+                catch (WebException exception)
+                {
+                    throw ExceptionHelpers.WebExceptionHelper(exception, "view_group");
+                }
+                catch (Exception exception)
+                {
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetRoom");
+                }
             }
         }
         #endregion
@@ -116,44 +126,47 @@ namespace HipchatApiV2
             string password = null, 
             string refreshToken = null)
         {
-            var request = new GenerateTokenRequest
+           using (JsonSerializerConfigScope())
             {
-                Username = username,
-                Code = code,
-                GrantType = grantType,
-                Password = password,
-                RedirectUri = redirectUri,
-                RefreshToken = refreshToken,
-                Scope = string.Join(" ",scopes.Select(x => x.ToString()))
-            };
+                var request = new GenerateTokenRequest
+                {
+                    Username = username,
+                    Code = code,
+                    GrantType = grantType,
+                    Password = password,
+                    RedirectUri = redirectUri,
+                    RefreshToken = refreshToken,
+                    Scope = string.Join(" ", scopes.Select(x => x.ToString()))
+                };
 
-            Action<HttpWebRequest> requestFilter = x => { };
-            if (!basicAuthUsername.IsEmpty() && !basicAuthPassword.IsEmpty())
-            {
-                var auth = string.Format("{0}:{1}", basicAuthUsername, basicAuthPassword);
-                var encrypted = Convert.ToBase64String(Encoding.ASCII.GetBytes(auth));
-                var creds = string.Format("{0} {1}", "Basic", encrypted);
-                requestFilter = x => x.Headers[HttpRequestHeader.Authorization] = creds;
-            }
+                Action<HttpWebRequest> requestFilter = x => { };
+                if (!basicAuthUsername.IsEmpty() && !basicAuthPassword.IsEmpty())
+                {
+                    var auth = string.Format("{0}:{1}", basicAuthUsername, basicAuthPassword);
+                    var encrypted = Convert.ToBase64String(Encoding.ASCII.GetBytes(auth));
+                    var creds = string.Format("{0} {1}", "Basic", encrypted);
+                    requestFilter = x => x.Headers[HttpRequestHeader.Authorization] = creds;
+                }
 
 
 
-            var endpoint = HipchatEndpoints.GenerateTokenEndpoint;
+                var endpoint = HipchatEndpoints.GenerateTokenEndpoint;
 
-            var form = request.FormEncodeHipchatRequest();
-            try
-            {
-                var response = endpoint
-                    .PostToUrl(request.FormEncodeHipchatRequest(),requestFilter: requestFilter)
-                    .FromJson<HipchatGenerateTokenResponse>();
-                return response;
-            }
-            catch (Exception exception)
-            {
-                if (exception is WebException)
-                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "");
+                var form = request.FormEncodeHipchatRequest();
+                try
+                {
+                    var response = endpoint
+                        .PostToUrl(request.FormEncodeHipchatRequest(), requestFilter: requestFilter)
+                        .FromJson<HipchatGenerateTokenResponse>();
+                    return response;
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "");
 
-                throw ExceptionHelpers.GeneralExceptionHelper(exception, "GenerateToken");
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "GenerateToken");
+                }
             }
 
         }
@@ -163,23 +176,26 @@ namespace HipchatApiV2
         public HipchatGetAllUsersResponse GetAllUsers(int startIndex = 0, int maxResults = 100, bool includeGuests = false,
             bool includeDeleted = false)
         {
-            try
+            using (JsonSerializerConfigScope())
             {
-                return HipchatEndpoints.GetAllUsersEndpoint
-                    .AddHipchatAuthentication()
-                    .AddQueryParam("start-index", startIndex)
-                    .AddQueryParam("max-results", maxResults)
-                    .AddQueryParam("include-guests", includeGuests)
-                    .AddQueryParam("include-deleted", includeDeleted)
-                    .GetJsonFromUrl()
-                    .FromJson<HipchatGetAllUsersResponse>();
-            }
-            catch (Exception exception)
-            {
-                if (exception is WebException)
-                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
+                try
+                {
+                    return HipchatEndpoints.GetAllUsersEndpoint
+                        .AddHipchatAuthentication()
+                        .AddQueryParam("start-index", startIndex)
+                        .AddQueryParam("max-results", maxResults)
+                        .AddQueryParam("include-guests", includeGuests)
+                        .AddQueryParam("include-deleted", includeDeleted)
+                        .GetJsonFromUrl()
+                        .FromJson<HipchatGetAllUsersResponse>();
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
 
-                throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllUsers");
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllUsers");
+                }
             }
         }
 
@@ -211,29 +227,32 @@ namespace HipchatApiV2
         /// </remarks>
         public bool UpdateRoom(string roomName, UpdateRoomRequest request)
         {
-            var result = false;
-            try
+            using (JsonSerializerConfigScope())
             {
-             
-                HipchatEndpoints.UpdateRoomEndpoingFormat.Fmt(roomName)
-                    .AddHipchatAuthentication()
-                    .PutJsonToUrl(data: request, responseFilter: r =>
-                    {
-                        if (r.StatusCode == HttpStatusCode.NoContent)
+                var result = false;
+                try
+                {
+
+                    HipchatEndpoints.UpdateRoomEndpoingFormat.Fmt(roomName)
+                        .AddHipchatAuthentication()
+                        .PutJsonToUrl(data: request, responseFilter: r =>
                         {
-                            result = true;
-                        }
-                    });
+                            if (r.StatusCode == HttpStatusCode.NoContent)
+                            {
+                                result = true;
+                            }
+                        });
 
-            }
-            catch (Exception exception)
-            {
-                if (exception is WebException)
-                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
 
-                throw ExceptionHelpers.GeneralExceptionHelper(exception, "Updateroom");
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "Updateroom");
+                }
+                return result;
             }
-            return result;
         }
         #endregion
 
@@ -251,14 +270,17 @@ namespace HipchatApiV2
         /// </remarks>
         public CreateWebHookResponse CreateWebHook(int roomId, string url, string pattern, RoomEvent eventType, string name)
         {
-            var request = new CreateWebHookRequest
+            using (JsonSerializerConfigScope())
             {
-                Event = eventType,
-                Pattern = pattern,
-                Url = url,
-                Name = name
-            };
-            return CreateWebHook(roomId.ToString(CultureInfo.InvariantCulture), request);
+                var request = new CreateWebHookRequest
+                {
+                    Event = eventType,
+                    Pattern = pattern,
+                    Url = url,
+                    Name = name
+                };
+                return CreateWebHook(roomId.ToString(CultureInfo.InvariantCulture), request);
+            }
         }
 
         /// <summary>
@@ -274,14 +296,17 @@ namespace HipchatApiV2
         /// </remarks>
         public CreateWebHookResponse CreateWebHook(string roomName, string url, string pattern, RoomEvent eventType, string name)
         {
-            var request = new CreateWebHookRequest
+            using (JsonSerializerConfigScope())
             {
-                Event = eventType,
-                Pattern = pattern,
-                Url = url,
-                Name = name
-            };
-            return CreateWebHook(roomName, request);
+                var request = new CreateWebHookRequest
+                {
+                    Event = eventType,
+                    Pattern = pattern,
+                    Url = url,
+                    Name = name
+                };
+                return CreateWebHook(roomName, request);
+            }
         }
 
         /// <summary>
@@ -294,19 +319,22 @@ namespace HipchatApiV2
         /// </remarks>
         public CreateWebHookResponse CreateWebHook(string roomName, CreateWebHookRequest request)
         {
-            try
+            using (JsonSerializerConfigScope())
             {
-                return HipchatEndpoints.CreateWebhookEndpointFormat.Fmt(roomName)
-                    .AddHipchatAuthentication()
-                    .PostJsonToUrl(request)
-                    .FromJson<CreateWebHookResponse>();
-            }
-            catch (Exception exception)
-            {
-                if (exception is WebException)
-                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
+                try
+                {
+                    return HipchatEndpoints.CreateWebhookEndpointFormat.Fmt(roomName)
+                        .AddHipchatAuthentication()
+                        .PostJsonToUrl(request)
+                        .FromJson<CreateWebHookResponse>();
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
 
-                throw ExceptionHelpers.GeneralExceptionHelper(exception, "CreateWebHook");
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "CreateWebHook");
+                }
             }
         }
         #endregion
@@ -327,15 +355,18 @@ namespace HipchatApiV2
         public HipchatCreateRoomResponse CreateRoom(string nameOfRoom, bool guestAccess = false, string ownerUserId = null,
             RoomPrivacy privacy = RoomPrivacy.Public)
         {
-            var request = new CreateRoomRequest
+            using (JsonSerializerConfigScope())
             {
-                GuestAccess = guestAccess,
-                Name = nameOfRoom,
-                OwnerUserId = ownerUserId,
-                Privacy = privacy 
-            };
+                var request = new CreateRoomRequest
+                {
+                    GuestAccess = guestAccess,
+                    Name = nameOfRoom,
+                    OwnerUserId = ownerUserId,
+                    Privacy = privacy
+                };
 
-            return CreateRoom(request);
+                return CreateRoom(request);
+            }
         }
 
         /// <summary>
@@ -347,21 +378,24 @@ namespace HipchatApiV2
         /// </remarks>
         public HipchatCreateRoomResponse CreateRoom(CreateRoomRequest request)
         {
-            if (request.Name.IsEmpty() || request.Name.Length >50)
-                throw new ArgumentOutOfRangeException("request", "Name of room must be between 1 and 50 characters.");
-            try
+            using (JsonSerializerConfigScope())
             {
-                return HipchatEndpoints.CreateRoomEndpoint
-                    .AddHipchatAuthentication()
-                    .PostJsonToUrl(request)
-                    .FromJson<HipchatCreateRoomResponse>();
-            }
-            catch (Exception exception)
-            {
-                 if (exception is WebException)
-                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "manage_rooms");
+                if (request.Name.IsEmpty() || request.Name.Length > 50)
+                    throw new ArgumentOutOfRangeException("request", "Name of room must be between 1 and 50 characters.");
+                try
+                {
+                    return HipchatEndpoints.CreateRoomEndpoint
+                        .AddHipchatAuthentication()
+                        .PostJsonToUrl(request)
+                        .FromJson<HipchatCreateRoomResponse>();
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "manage_rooms");
 
-                throw ExceptionHelpers.GeneralExceptionHelper(exception, "CreateRoom");               
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "CreateRoom");
+                }
             }
         }
         #endregion
@@ -401,15 +435,18 @@ namespace HipchatApiV2
         public bool SendNotification(string roomName, string message, RoomColors backgroundColor = RoomColors.Yellow,
             bool notify = false, HipchatMessageFormat messageFormat = HipchatMessageFormat.Html)
         {
-            var request = new SendRoomNotificationRequest
+            using (JsonSerializerConfigScope())
             {
-                Color = backgroundColor,
-                Message = message,
-                MessageFormat = messageFormat,
-                Notify = notify
-            };
+                var request = new SendRoomNotificationRequest
+                {
+                    Color = backgroundColor,
+                    Message = message,
+                    MessageFormat = messageFormat,
+                    Notify = notify
+                };
 
-            return SendNotification(roomName, request);
+                return SendNotification(roomName, request);
+            }
         }
 
         /// <summary>
@@ -437,29 +474,33 @@ namespace HipchatApiV2
         /// </remarks>
         public bool SendNotification(string roomName, SendRoomNotificationRequest request)
         {
-            if (request.Message.IsEmpty() || request.Message.Length > 10000)
-                throw new ArgumentOutOfRangeException("request", "message length must be between 0 and 10k characters");
-
-            var result = false;
-            try
+            using (JsonSerializerConfigScope())
             {
-                HipchatEndpoints.SendNotificationEndpointFormat
-                    .Fmt(roomName)
-                    .AddHipchatAuthentication()
-                    .PostJsonToUrl(request, null, x =>
-                    {
-                        if (x.StatusCode == HttpStatusCode.NoContent)
-                            result = true;
-                    });
-            }
-            catch (Exception exception)
-            {
-                if (exception is WebException)
-                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "send_notification");
+                if (request.Message.IsEmpty() || request.Message.Length > 10000)
+                    throw new ArgumentOutOfRangeException("request",
+                        "message length must be between 0 and 10k characters");
 
-                throw ExceptionHelpers.GeneralExceptionHelper(exception, "SendNotification");
+                var result = false;
+                try
+                {
+                    HipchatEndpoints.SendNotificationEndpointFormat
+                        .Fmt(roomName)
+                        .AddHipchatAuthentication()
+                        .PostJsonToUrl(request, null, x =>
+                        {
+                            if (x.StatusCode == HttpStatusCode.NoContent)
+                                result = true;
+                        });
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "send_notification");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "SendNotification");
+                }
+                return result;
             }
-            return result;
         }
         #endregion
 
@@ -487,27 +528,30 @@ namespace HipchatApiV2
         /// </remarks>
         public bool DeleteRoom(string roomName)
         {
-            if (roomName.IsEmpty() || roomName.Length > 100)
-                throw new ArgumentOutOfRangeException("roomName", "Valid roomName length is 1-100.");
-            var result = false;
-            try
+            using (JsonSerializerConfigScope())
             {
-                HipchatEndpoints.DeleteRoomEndpointFormat.Fmt(roomName)
-                    .AddHipchatAuthentication()
-                    .DeleteFromUrl(responseFilter: x =>
-                    {
-                        if (x.StatusCode == HttpStatusCode.NoContent)
-                            result = true;
-                    });
-            }
-            catch (Exception exception)
-            {
-                if (exception is WebException)
-                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "manage_rooms");
+                if (roomName.IsEmpty() || roomName.Length > 100)
+                    throw new ArgumentOutOfRangeException("roomName", "Valid roomName length is 1-100.");
+                var result = false;
+                try
+                {
+                    HipchatEndpoints.DeleteRoomEndpointFormat.Fmt(roomName)
+                        .AddHipchatAuthentication()
+                        .DeleteFromUrl(responseFilter: x =>
+                        {
+                            if (x.StatusCode == HttpStatusCode.NoContent)
+                                result = true;
+                        });
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "manage_rooms");
 
-                throw ExceptionHelpers.GeneralExceptionHelper(exception, "DeleteRoom");     
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "DeleteRoom");
+                }
+                return result;
             }
-            return result;
         }
         #endregion
 
@@ -524,27 +568,30 @@ namespace HipchatApiV2
         /// </remarks>
         public HipchatGetAllRoomsResponse GetAllRooms(int startIndex = 0, int maxResults = 100, bool includeArchived = false)
         {
-            if (startIndex > 100)
-                throw new ArgumentOutOfRangeException("startIndex", "startIndex must be between 0 and 100");
-            if (maxResults > 100)
-                throw new ArgumentOutOfRangeException("maxResults", "maxResults must be between 0 and 100");
-
-            try
+            using (JsonSerializerConfigScope())
             {
-                return HipchatEndpoints.GetAllRoomsEndpoint
-                    .AddQueryParam("start-index", startIndex)
-                    .AddQueryParam("max-results", maxResults)
-                    .AddQueryParam("include-archived", includeArchived)
-                    .AddHipchatAuthentication()
-                    .GetJsonFromUrl()
-                    .FromJson<HipchatGetAllRoomsResponse>();
-            }
-            catch (Exception exception)
-            {
-                if (exception is WebException)
-                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
+                if (startIndex > 100)
+                    throw new ArgumentOutOfRangeException("startIndex", "startIndex must be between 0 and 100");
+                if (maxResults > 100)
+                    throw new ArgumentOutOfRangeException("maxResults", "maxResults must be between 0 and 100");
 
-                throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllRooms");
+                try
+                {
+                    return HipchatEndpoints.GetAllRoomsEndpoint
+                        .AddQueryParam("start-index", startIndex)
+                        .AddQueryParam("max-results", maxResults)
+                        .AddQueryParam("include-archived", includeArchived)
+                        .AddHipchatAuthentication()
+                        .GetJsonFromUrl()
+                        .FromJson<HipchatGetAllRoomsResponse>();
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllRooms");
+                }
             }
         }
         #endregion
@@ -562,21 +609,24 @@ namespace HipchatApiV2
         /// </remarks>
         public HipchatGetAllWebhooksResponse GetAllWebhooks(string roomName, int startIndex = 0, int maxResults = 0)
         {
-            try
+            using (JsonSerializerConfigScope())
             {
-                return HipchatEndpoints.GetAllWebhooksEndpointFormat.Fmt(roomName)
-                    .AddQueryParam("start-index", startIndex)
-                    .AddQueryParam("max-results", maxResults)
-                    .AddHipchatAuthentication()
-                    .GetJsonFromUrl()
-                    .FromJson<HipchatGetAllWebhooksResponse>();
-            }
-            catch (Exception exception)
-            {
-                if (exception is WebException)
-                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
+                try
+                {
+                    return HipchatEndpoints.GetAllWebhooksEndpointFormat.Fmt(roomName)
+                        .AddQueryParam("start-index", startIndex)
+                        .AddQueryParam("max-results", maxResults)
+                        .AddHipchatAuthentication()
+                        .GetJsonFromUrl()
+                        .FromJson<HipchatGetAllWebhooksResponse>();
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
 
-                throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllWebhooks");
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllWebhooks");
+                }
             }
         }
 
@@ -609,25 +659,28 @@ namespace HipchatApiV2
         /// </remarks>
         public bool DeleteWebhook(string roomName, int webHookId)
         {
-            var result = false;
-            try
+            using (JsonSerializerConfigScope())
             {
-                HipchatEndpoints.DeleteWebhookEndpointFormat.Fmt(roomName, webHookId)
-                    .AddHipchatAuthentication()
-                    .DeleteFromUrl(responseFilter: request =>
-                    {
-                        if (request.StatusCode == HttpStatusCode.NoContent)
-                            result = true;
-                    });
-            }
-            catch (Exception exception)
-            {
-                if (exception is WebException)
-                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
+                var result = false;
+                try
+                {
+                    HipchatEndpoints.DeleteWebhookEndpointFormat.Fmt(roomName, webHookId)
+                        .AddHipchatAuthentication()
+                        .DeleteFromUrl(responseFilter: request =>
+                        {
+                            if (request.StatusCode == HttpStatusCode.NoContent)
+                                result = true;
+                        });
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
 
-                throw ExceptionHelpers.GeneralExceptionHelper(exception, "DeleteWebhook");
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "DeleteWebhook");
+                }
+                return result;
             }
-            return result;
         }
 
         /// <summary>
@@ -658,30 +711,33 @@ namespace HipchatApiV2
         /// </remarks>
         public bool SetTopic(string roomName, string topic)
         {
-            if (topic == null || topic.Length > 250)
-                throw new ArgumentOutOfRangeException("topic", "Valid length is 0 - 250 characters");
-
-            var result = false;
-            try
+            using (JsonSerializerConfigScope())
             {
-                HipchatEndpoints.SetTopicEnpdointFormat
-                    .Fmt(roomName)
-                    .AddHipchatAuthentication()
-                    .PutJsonToUrl(topic, responseFilter: resp =>
+                if (topic == null || topic.Length > 250)
+                    throw new ArgumentOutOfRangeException("topic", "Valid length is 0 - 250 characters");
+
+                var result = false;
+                try
                 {
-                    if (resp.StatusCode == HttpStatusCode.NoContent)
-                        result = true;
-                });
+                    HipchatEndpoints.SetTopicEnpdointFormat
+                        .Fmt(roomName)
+                        .AddHipchatAuthentication()
+                        .PutJsonToUrl(topic, responseFilter: resp =>
+                        {
+                            if (resp.StatusCode == HttpStatusCode.NoContent)
+                                result = true;
+                        });
 
-            }
-            catch (Exception exception)
-            {
-                if (exception is WebException)
-                    throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
 
-                throw ExceptionHelpers.GeneralExceptionHelper(exception, "SetTopic");
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "SetTopic");
+                }
+                return result;
             }
-            return result;
         }
 
         /// <summary>
