@@ -140,7 +140,7 @@ namespace HipchatApiV2
 
             var endpoint = HipchatEndpoints.GenerateTokenEndpoint;
 
-            var form = request.SerializeAndFormat();
+            var form = request.FormEncodeHipchatRequest();
             try
             {
                 var response = endpoint

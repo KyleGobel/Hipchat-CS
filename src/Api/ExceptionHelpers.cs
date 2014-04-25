@@ -19,6 +19,8 @@ namespace HipchatApiV2
                 var bodyText = exception.GetResponseBody();
                 errorMessage = JsonObject.Parse(bodyText).Object("error").Get("message");
                 errorType = JsonObject.Parse(bodyText).Object("error").Get("type");
+                if (errorMessage.IsEmpty())
+                    errorMessage = bodyText;
             }
             catch { }
             

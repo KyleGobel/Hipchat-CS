@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="CreateRoomTests.cs" />
     <Compile Include="DeleteRoomTests.cs" />
+    <Compile Include="GenerateAuthTokenExample.cs" />
     <Compile Include="GetAllUsersTests.cs" />
     <Compile Include="GetAllWebhooks.cs" />
     <Compile Include="GetRoomTests.cs" />
