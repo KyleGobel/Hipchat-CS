@@ -1,6 +1,8 @@
 Hipchat-CS
 ==========
 
+[![MyGet Build Status](https://www.myget.org/BuildSource/Badge/chronos?identifier=339e2d5e-36e1-44ad-a4c6-71135f9d0a3f)](https://www.myget.org/)
+
 An easy to use C# wrapper on the V2 Hipchat API
 
 Can be installed through nuget.
