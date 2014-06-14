@@ -87,7 +87,7 @@ namespace HipchatApiV2
                 try
                 {
                     return HipchatEndpoints.GetRoomEndpointFormat.Fmt(roomName)
-                        .AddHipchatAuthentication()
+                        .AddHipchatAuthentication(_authToken)
                         .GetJsonFromUrl()
                         .FromJson<HipchatGetRoomResponse>();
                 }
@@ -181,7 +181,7 @@ namespace HipchatApiV2
                 try
                 {
                     return HipchatEndpoints.GetAllUsersEndpoint
-                        .AddHipchatAuthentication()
+                        .AddHipchatAuthentication(_authToken)
                         .AddQueryParam("start-index", startIndex)
                         .AddQueryParam("max-results", maxResults)
                         .AddQueryParam("include-guests", includeGuests)
@@ -234,7 +234,7 @@ namespace HipchatApiV2
                 {
 
                     HipchatEndpoints.UpdateRoomEndpoingFormat.Fmt(roomName)
-                        .AddHipchatAuthentication()
+                        .AddHipchatAuthentication(_authToken)
                         .PutJsonToUrl(data: request, responseFilter: r =>
                         {
                             if (r.StatusCode == HttpStatusCode.NoContent)
@@ -324,7 +324,7 @@ namespace HipchatApiV2
                 try
                 {
                     return HipchatEndpoints.CreateWebhookEndpointFormat.Fmt(roomName)
-                        .AddHipchatAuthentication()
+                        .AddHipchatAuthentication(_authToken)
                         .PostJsonToUrl(request)
                         .FromJson<CreateWebHookResponse>();
                 }
@@ -385,7 +385,7 @@ namespace HipchatApiV2
                 try
                 {
                     return HipchatEndpoints.CreateRoomEndpoint
-                        .AddHipchatAuthentication()
+                        .AddHipchatAuthentication(_authToken)
                         .PostJsonToUrl(request)
                         .FromJson<HipchatCreateRoomResponse>();
                 }
@@ -485,7 +485,7 @@ namespace HipchatApiV2
                 {
                     HipchatEndpoints.SendNotificationEndpointFormat
                         .Fmt(roomName)
-                        .AddHipchatAuthentication()
+                        .AddHipchatAuthentication(_authToken)
                         .PostJsonToUrl(request, null, x =>
                         {
                             if (x.StatusCode == HttpStatusCode.NoContent)
@@ -536,7 +536,7 @@ namespace HipchatApiV2
                 try
                 {
                     HipchatEndpoints.DeleteRoomEndpointFormat.Fmt(roomName)
-                        .AddHipchatAuthentication()
+                        .AddHipchatAuthentication(_authToken)
                         .DeleteFromUrl(responseFilter: x =>
                         {
                             if (x.StatusCode == HttpStatusCode.NoContent)
@@ -581,7 +581,7 @@ namespace HipchatApiV2
                         .AddQueryParam("start-index", startIndex)
                         .AddQueryParam("max-results", maxResults)
                         .AddQueryParam("include-archived", includeArchived)
-                        .AddHipchatAuthentication()
+                        .AddHipchatAuthentication(_authToken)
                         .GetJsonFromUrl()
                         .FromJson<HipchatGetAllRoomsResponse>();
                 }
@@ -616,7 +616,7 @@ namespace HipchatApiV2
                     return HipchatEndpoints.GetAllWebhooksEndpointFormat.Fmt(roomName)
                         .AddQueryParam("start-index", startIndex)
                         .AddQueryParam("max-results", maxResults)
-                        .AddHipchatAuthentication()
+                        .AddHipchatAuthentication(_authToken)
                         .GetJsonFromUrl()
                         .FromJson<HipchatGetAllWebhooksResponse>();
                 }
@@ -665,7 +665,7 @@ namespace HipchatApiV2
                 try
                 {
                     HipchatEndpoints.DeleteWebhookEndpointFormat.Fmt(roomName, webHookId)
-                        .AddHipchatAuthentication()
+                        .AddHipchatAuthentication(_authToken)
                         .DeleteFromUrl(responseFilter: request =>
                         {
                             if (request.StatusCode == HttpStatusCode.NoContent)
@@ -721,7 +721,7 @@ namespace HipchatApiV2
                 {
                     HipchatEndpoints.SetTopicEnpdointFormat
                         .Fmt(roomName)
-                        .AddHipchatAuthentication()
+                        .AddHipchatAuthentication(_authToken)
                         .PutJsonToUrl(topic, responseFilter: resp =>
                         {
                             if (resp.StatusCode == HttpStatusCode.NoContent)
