@@ -44,7 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\EmoticonType.cs" />
+    <Compile Include="Requests\GetAllEmoticonsRequest.cs" />
     <Compile Include="Requests\UpdateRoomRequest.cs" />
+    <Compile Include="Responses\HipchatGetAllEmoticonsResponse.cs" />
     <Compile Include="Responses\HipchatGetAllUsersResponse.cs" />
     <Compile Include="Responses\HipchatGetAllWebhooksItems.cs" />
     <Compile Include="Responses\HipchatGetAllWebhooksResponse.cs" />

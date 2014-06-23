@@ -171,6 +171,33 @@ namespace HipchatApiV2
 
         }
 
+        #region GetAllEmoticons
+        public HipchatGetAllEmoticonsResponse GetAllEmoticons(int startIndex = 0, int maxResults = 100, EmoticonType type = EmoticonType.All)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                try
+                {
+                    return HipchatEndpoints.GetAllEmoticonsEndpoint
+                        .AddHipchatAuthentication(_authToken)
+                        .AddQueryParam("start-index", startIndex)
+                        .AddQueryParam("max-results", maxResults)
+                        .AddQueryParam("type", type)
+                        .GetJsonFromUrl()
+                        .FromJson<HipchatGetAllEmoticonsResponse>();
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllEmoticons");
+                }
+            }
+        }
+
+        #endregion
+
         #region GetAllUsers
 
         public HipchatGetAllUsersResponse GetAllUsers(int startIndex = 0, int maxResults = 100, bool includeGuests = false,
