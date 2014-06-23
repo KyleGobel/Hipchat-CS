@@ -20,7 +20,7 @@ Finished Methods
 - SendNotification
 - CreateWebHook
 - GetAllWebhooks
-
+- GetAllEmoticons
 
 All methods have several optional paramaters and or overloads, fully documented.  Check intellisense.
 
