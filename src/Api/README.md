@@ -21,6 +21,7 @@ Finished Methods
 - CreateWebHook
 - GetAllWebhooks
 - GetAllEmoticons
+- GetEmoticon
 
 All methods have several optional paramaters and or overloads, fully documented.  Check intellisense.
 

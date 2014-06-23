@@ -49,6 +49,7 @@
     <Compile Include="CreateRoomTests.cs" />
     <Compile Include="DeleteRoomTests.cs" />
     <Compile Include="GenerateAuthTokenExample.cs" />
+    <Compile Include="GetEmoticonTests.cs" />
     <Compile Include="GetAllEmoticonsTests.cs" />
     <Compile Include="GetAllUsersTests.cs" />
     <Compile Include="GetAllWebhooks.cs" />

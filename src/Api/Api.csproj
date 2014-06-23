@@ -47,6 +47,7 @@
     <Compile Include="Enums\EmoticonType.cs" />
     <Compile Include="Requests\GetAllEmoticonsRequest.cs" />
     <Compile Include="Requests\UpdateRoomRequest.cs" />
+    <Compile Include="Responses\HipchatGetEmoticonResponse.cs" />
     <Compile Include="Responses\HipchatGetAllEmoticonsResponse.cs" />
     <Compile Include="Responses\HipchatGetAllUsersResponse.cs" />
     <Compile Include="Responses\HipchatGetAllWebhooksItems.cs" />
