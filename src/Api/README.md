@@ -12,15 +12,20 @@ Install-Package Hipchat-CS
 **Work in progress**
 
 Finished Methods
-- GetRoom
-- GenerateToken
-- DeleteRoom
 - CreateRoom
-- GetAllRooms
-- SendNotification
 - CreateWebHook
+- DeleteRoom
+- DeleteWebhook
+- GenerateToken
+- GetAllEmoticons
+- GetAllRooms
+- GetAllUsers
 - GetAllWebhooks
-
+- GetEmoticon
+- GetRoom
+- SendNotification
+- SetTopic
+- UpdateRoom
 
 All methods have several optional paramaters and or overloads, fully documented.  Check intellisense.
 

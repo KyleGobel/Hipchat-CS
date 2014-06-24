@@ -171,6 +171,106 @@ namespace HipchatApiV2
 
         }
 
+        #region GetEmoticon
+        /// <summary>
+        /// Get emoticon details
+        /// </summary>
+        /// <param name="id">The emoticon id</param>
+        /// <returns>the emoticon details</returns>
+        /// <remarks>
+        /// Auth required with scope 'view_group'. https://www.hipchat.com/docs/apiv2/method/get_emoticon
+        /// </remarks>
+        public HipchatGetEmoticonResponse GetEmoticon(int id = 0)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                try
+                {
+                    return HipchatEndpoints.GetEmoticonEndpoint
+                        .Fmt(id)
+                        .AddHipchatAuthentication(_authToken)
+                        .GetJsonFromUrl()
+                        .FromJson<HipchatGetEmoticonResponse>();
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetEmoticon");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get emoticon details
+        /// </summary>
+        /// <param name="shortcut">The emoticon shortcut</param>
+        /// <returns>the emoticon details</returns>
+        /// <remarks>
+        /// Auth required with scope 'view_group'. https://www.hipchat.com/docs/apiv2/method/get_emoticon
+        /// </remarks>
+        public HipchatGetEmoticonResponse GetEmoticon(string shortcut = "")
+        {
+            using (JsonSerializerConfigScope())
+            {
+                try
+                {
+                    return HipchatEndpoints.GetEmoticonEndpoint
+                        .Fmt(shortcut)
+                        .AddHipchatAuthentication(_authToken)
+                        .GetJsonFromUrl()
+                        .FromJson<HipchatGetEmoticonResponse>();
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetEmoticon");
+                }
+            }
+        }
+
+        #endregion
+
+        #region GetAllEmoticons
+        /// <summary>
+        /// Gets all emoticons for the current group
+        /// </summary>
+        /// <param name="startIndex">The start index for the result set</param>
+        /// <param name="maxResults">The maximum number of results</param>
+        /// <param name="type">The type of emoticons to get</param>
+        /// <returns>the matching set of emoticons</returns>
+        /// <remarks>
+        /// Auth required with scope 'view_group'. https://www.hipchat.com/docs/apiv2/method/get_all_emoticons
+        /// </remarks>
+        public HipchatGetAllEmoticonsResponse GetAllEmoticons(int startIndex = 0, int maxResults = 100, EmoticonType type = EmoticonType.All)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                try
+                {
+                    return HipchatEndpoints.GetAllEmoticonsEndpoint
+                        .AddHipchatAuthentication(_authToken)
+                        .AddQueryParam("start-index", startIndex)
+                        .AddQueryParam("max-results", maxResults)
+                        .AddQueryParam("type", type)
+                        .GetJsonFromUrl()
+                        .FromJson<HipchatGetAllEmoticonsResponse>();
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllEmoticons");
+                }
+            }
+        }
+
+        #endregion
+
         #region GetAllUsers
 
         public HipchatGetAllUsersResponse GetAllUsers(int startIndex = 0, int maxResults = 100, bool includeGuests = false,
