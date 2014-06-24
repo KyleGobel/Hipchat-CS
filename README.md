@@ -1,8 +1,6 @@
 Hipchat-CS
 ==========
 
-[![MyGet Build Status](https://www.myget.org/BuildSource/Badge/chronos?identifier=339e2d5e-36e1-44ad-a4c6-71135f9d0a3f)](https://www.myget.org/)
-
 An easy to use C# wrapper on the V2 Hipchat API
 
 Can be installed through nuget.
@@ -14,18 +12,20 @@ Install-Package Hipchat-CS
 **Work in progress**
 
 Finished Methods
-- SetTopic
-- GetRoom
-- GenerateToken
-- DeleteRoom
-- UpdateRoom
-- DeleteWebhook
 - CreateRoom
-- GetAllRooms
-- SendNotification
 - CreateWebHook
-- GetAllWebhooks
+- DeleteRoom
+- DeleteWebhook
+- GenerateToken
+- GetAllEmoticons
+- GetAllRooms
 - GetAllUsers
+- GetAllWebhooks
+- GetEmoticon
+- GetRoom
+- SendNotification
+- SetTopic
+- UpdateRoom
 
 All methods have several optional paramaters and or overloads, fully documented.  Check intellisense.
 
