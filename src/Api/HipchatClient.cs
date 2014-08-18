@@ -856,5 +856,65 @@ namespace HipchatApiV2
         }
 
         #endregion
+
+        #region CreateUser
+        /// <summary>
+        /// Create a new user
+        /// </summary>
+        /// <returns>A HipchatCreateUserReponse</returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_group'. https://www.hipchat.com/docs/apiv2/method/create_user
+        /// </remarks>
+        public HipchatCreateUserResponse CreateUser(CreateUserRequest request) {
+            using (JsonSerializerConfigScope()) {
+                if (string.IsNullOrEmpty(request.Name) || request.Name.Length > 50) {
+                    throw new ArgumentOutOfRangeException("name", "Valid length range: 1 - 50.");
+                }
+
+                try {
+                    return HipchatEndpoints.CreateUserEndpointFormat
+                        .AddHipchatAuthentication(_authToken)
+                        .PostJsonToUrl(request)
+                        .FromJson<HipchatCreateUserResponse>();
+                } catch (Exception exception) {
+                    Console.WriteLine(exception.Message);
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_group");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "CreateUser");
+                }
+            }
+        }
+        #endregion
+
+        #region DeleteUser
+        /// <summary>
+        /// Delete a user
+        /// </summary>
+        /// <param name="idOrEmail">The id, email address, or mention name (beginning with an '@') of the user to delete.</param>
+        /// <returns>A HipchatDeleteUserReponse</returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_group'. https://api.hipchat.com/v2/user/{id_or_email}
+        /// </remarks>
+        public bool DeleteUser(string idOrEmail) {
+            using (JsonSerializerConfigScope()) {
+                var result = false;
+                try {
+                    HipchatEndpoints.DeleteUserEndpointFormat.Fmt(idOrEmail)
+                        .AddHipchatAuthentication(_authToken)
+                        .DeleteFromUrl(responseFilter: x => {
+                            if (x.StatusCode == HttpStatusCode.NoContent)
+                                result = true;
+                        });
+                } catch (Exception exception) {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_group");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "DeleteUser");
+                }
+                return result;
+            }
+        }
+        #endregion
     }
 }

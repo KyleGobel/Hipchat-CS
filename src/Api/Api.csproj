@@ -45,8 +45,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\EmoticonType.cs" />
+    <Compile Include="Requests\CreateUserRequest.cs" />
     <Compile Include="Requests\GetAllEmoticonsRequest.cs" />
     <Compile Include="Requests\UpdateRoomRequest.cs" />
+    <Compile Include="Responses\HipchatCreateUserResponse.cs" />
     <Compile Include="Responses\HipchatGetEmoticonResponse.cs" />
     <Compile Include="Responses\HipchatGetAllEmoticonsResponse.cs" />
     <Compile Include="Responses\HipchatGetAllUsersResponse.cs" />

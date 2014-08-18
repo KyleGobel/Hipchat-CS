@@ -20,5 +20,7 @@ namespace HipchatApiV2
         public static readonly string SetTopicEnpdointFormat = "https://api.hipchat.com/v2/room/{0}/topic";
         public static readonly string GetAllEmoticonsEndpoint = "https://api.hipchat.com/v2/emoticon";
         public static readonly string GetEmoticonEndpoint = "https://api.hipchat.com/v2/emoticon/{0}";
+        public static readonly string CreateUserEndpointFormat = "https://api.hipchat.com/v2/user";
+        public static readonly string DeleteUserEndpointFormat = "https://api.hipchat.com/v2/user/{0}";
     }
 }
