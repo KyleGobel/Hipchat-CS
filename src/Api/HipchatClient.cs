@@ -865,18 +865,24 @@ namespace HipchatApiV2
         /// <remarks>
         /// Auth required with scope 'admin_group'. https://www.hipchat.com/docs/apiv2/method/create_user
         /// </remarks>
-        public HipchatCreateUserResponse CreateUser(CreateUserRequest request) {
-            using (JsonSerializerConfigScope()) {
-                if (string.IsNullOrEmpty(request.Name) || request.Name.Length > 50) {
+        public HipchatCreateUserResponse CreateUser(CreateUserRequest request)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                if (string.IsNullOrEmpty(request.Name) || request.Name.Length > 50)
+                {
                     throw new ArgumentOutOfRangeException("name", "Valid length range: 1 - 50.");
                 }
 
-                try {
+                try
+                {
                     return HipchatEndpoints.CreateUserEndpointFormat
                         .AddHipchatAuthentication(_authToken)
                         .PostJsonToUrl(request)
                         .FromJson<HipchatCreateUserResponse>();
-                } catch (Exception exception) {
+                } 
+                catch (Exception exception) 
+                {
                     Console.WriteLine(exception.Message);
                     if (exception is WebException)
                         throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_group");
@@ -896,17 +902,23 @@ namespace HipchatApiV2
         /// <remarks>
         /// Auth required with scope 'admin_group'. https://api.hipchat.com/v2/user/{id_or_email}
         /// </remarks>
-        public bool DeleteUser(string idOrEmail) {
-            using (JsonSerializerConfigScope()) {
+        public bool DeleteUser(string idOrEmail)
+        {
+            using (JsonSerializerConfigScope())
+            {
                 var result = false;
-                try {
+                try 
+                {
                     HipchatEndpoints.DeleteUserEndpointFormat.Fmt(idOrEmail)
                         .AddHipchatAuthentication(_authToken)
-                        .DeleteFromUrl(responseFilter: x => {
+                        .DeleteFromUrl(responseFilter: x =>
+                        {
                             if (x.StatusCode == HttpStatusCode.NoContent)
                                 result = true;
                         });
-                } catch (Exception exception) {
+                }
+                catch (Exception exception)
+                {
                     if (exception is WebException)
                         throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_group");
 
