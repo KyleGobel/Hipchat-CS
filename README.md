@@ -26,6 +26,8 @@ Finished Methods
 - SendNotification
 - SetTopic
 - UpdateRoom
+- CreateUser
+- DeleteUser
 
 All methods have several optional paramaters and or overloads, fully documented.  Check intellisense.
 
