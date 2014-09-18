@@ -1,26 +1,34 @@
 ﻿using ServiceStack;
+using System;
+using System.Configuration;
 
 namespace HipchatApiV2
 {
     public class HipchatEndpoints
     {
+        private static string EndpointHost = null;
+        static HipchatEndpoints()
+        {
+            EndpointHost = ConfigurationManager.AppSettings["hipchat_endpoint_host"] ?? "api.hipchat.com";
+        }
+
         private HipchatEndpoints() {}
-        public static readonly string CreateWebhookEndpointFormat = "https://api.hipchat.com/v2/room/{0}/webhook";
-        private const string SendMessageEndpointFormat = "https://api.hipchat.com/v2/room/{0}/notification?auth_token={1}";
-        public static readonly string CreateRoomEndpoint = "https://api.hipchat.com/v2/room";
-        public static readonly string GetAllRoomsEndpoint = "https://api.hipchat.com/v2/room";
-        public static readonly string GenerateTokenEndpoint = "https://api.hipchat.com/v2/oauth/token";
-        public static readonly string SendNotificationEndpointFormat = "https://api.hipchat.com/v2/room/{0}/notification";
-        public static readonly string GetRoomEndpointFormat = "https://api.hipchat.com/v2/room/{0}";
-        public static readonly string DeleteRoomEndpointFormat = "https://api.hipchat.com/v2/room/{0}";
-        public static readonly string GetAllWebhooksEndpointFormat = "https://api.hipchat.com/v2/room/{0}/webhook";
-        public static readonly string DeleteWebhookEndpointFormat = "https://api.hipchat.com/v2/room/{0}/webhook/{1}";
-        public static readonly string UpdateRoomEndpoingFormat = "https://api.hipchat.com/v2/room/{0}";
-        public static readonly string GetAllUsersEndpoint = "https://api.hipchat.com/v2/user";
-        public static readonly string SetTopicEnpdointFormat = "https://api.hipchat.com/v2/room/{0}/topic";
-        public static readonly string GetAllEmoticonsEndpoint = "https://api.hipchat.com/v2/emoticon";
-        public static readonly string GetEmoticonEndpoint = "https://api.hipchat.com/v2/emoticon/{0}";
-        public static readonly string CreateUserEndpointFormat = "https://api.hipchat.com/v2/user";
-        public static readonly string DeleteUserEndpointFormat = "https://api.hipchat.com/v2/user/{0}";
+        public static string CreateWebhookEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}/webhook", EndpointHost); } }
+        private string SendMessageEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}/notification?auth_token={{1}}", EndpointHost); } }
+        public static string CreateRoomEndpoint { get { return String.Format("https://{0}/v2/room", EndpointHost); } }
+        public static string GetAllRoomsEndpoint { get { return String.Format("https://{0}/v2/room", EndpointHost); } }
+        public static string GenerateTokenEndpoint { get { return String.Format("https://{0}/v2/oauth/token", EndpointHost); } }
+        public static string SendNotificationEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}/notification", EndpointHost); } }
+        public static string GetRoomEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}", EndpointHost); } }
+        public static string DeleteRoomEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}", EndpointHost); } }
+        public static string GetAllWebhooksEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}/webhook", EndpointHost); } }
+        public static string DeleteWebhookEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}/webhook/{{1}}", EndpointHost); } }
+        public static string UpdateRoomEndpoingFormat { get { return String.Format("https://{0}/v2/room/{{0}}", EndpointHost); } }
+        public static string GetAllUsersEndpoint { get { return String.Format("https://{0}/v2/user", EndpointHost); } }
+        public static string SetTopicEnpdointFormat { get { return String.Format("https://{0}/v2/room/{{0}}/topic", EndpointHost); } }
+        public static string GetAllEmoticonsEndpoint { get { return String.Format("https://{0}/v2/emoticon", EndpointHost); } }
+        public static string GetEmoticonEndpoint { get { return String.Format("https://{0}/v2/emoticon/{{0}}", EndpointHost); } }
+        public static string CreateUserEndpointFormat { get { return String.Format("https://{0}/v2/user", EndpointHost); } }
+        public static string DeleteUserEndpointFormat { get { return String.Format("https://{0}/v2/user/{{0}}", EndpointHost); } }
     }
 }
