@@ -5,6 +5,7 @@
         RoomMessage,
         RoomEnter,
         RoomExit,
-        RoomNotification
+        RoomNotification,
+        RoomTopicChange
     }
 }
