@@ -672,8 +672,8 @@ namespace HipchatApiV2
             {
                 if (startIndex > 100)
                     throw new ArgumentOutOfRangeException("startIndex", "startIndex must be between 0 and 100");
-                if (maxResults > 100)
-                    throw new ArgumentOutOfRangeException("maxResults", "maxResults must be between 0 and 100");
+                if (maxResults > 1000)
+                    throw new ArgumentOutOfRangeException("maxResults", "maxResults must be between 0 and 1000");
 
                 try
                 {
