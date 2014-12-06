@@ -666,20 +666,21 @@ namespace HipchatApiV2
         /// <remarks>
         /// Auth required with scope 'view_group'. https://www.hipchat.com/docs/apiv2/method/get_all_rooms
         /// </remarks>
-        public HipchatGetAllRoomsResponse GetAllRooms(int startIndex = 0, int maxResults = 100, bool includeArchived = false)
+        public HipchatGetAllRoomsResponse GetAllRooms(int startIndex = 0, int maxResults = 100, bool includePrivate = false, bool includeArchived = false)
         {
             using (JsonSerializerConfigScope())
             {
                 if (startIndex > 100)
                     throw new ArgumentOutOfRangeException("startIndex", "startIndex must be between 0 and 100");
-                if (maxResults > 100)
-                    throw new ArgumentOutOfRangeException("maxResults", "maxResults must be between 0 and 100");
+                if (maxResults > 1000)
+                    throw new ArgumentOutOfRangeException("maxResults", "maxResults must be between 0 and 1000");
 
                 try
                 {
                     return HipchatEndpoints.GetAllRoomsEndpoint
                         .AddQueryParam("start-index", startIndex)
                         .AddQueryParam("max-results", maxResults)
+                        .AddQueryParam("include-private", includePrivate)
                         .AddQueryParam("include-archived", includeArchived)
                         .AddHipchatAuthentication(_authToken)
                         .GetJsonFromUrl()
