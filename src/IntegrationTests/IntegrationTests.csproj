@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ViewRoomHistoryTests.cs" />
     <Compile Include="CreateRoomTests.cs" />
     <Compile Include="DeleteRoomTests.cs" />
     <Compile Include="GenerateAuthTokenExample.cs" />

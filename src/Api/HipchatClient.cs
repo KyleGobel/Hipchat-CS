@@ -102,13 +102,12 @@ namespace HipchatApiV2
             }
         }
         #endregion
+
         /// <summary>
         /// Gets an OAuth token for requested grant type. 
         /// </summary>
         /// <param name="grantType">The type of grant request</param>
         /// <param name="scopes">List of scopes that is requested</param>
-        /// <param name="basicAuthUsername">If you supply this, the basicAuthUsername and basicAuthPassword will be passed as credentials in BasicAuthentication format.  (Needed to generate a token for an addon)</param>
-        /// <param name="basicAuthPassword">If you supply this, the basicAuthUsername and basicAuthPassword will be passed as credentials in BasicAuthentication format. </param>
         /// <param name="username">The user name to generate a token on behalf of.  Only valid in
         /// the 'Password' and 'ClientCredentials' grant types.</param>
         /// <param name="code">The authorization code to exchange for an access token.  Only valid in the 'AuthorizationCode' grant type</param>
@@ -118,15 +117,13 @@ namespace HipchatApiV2
         public HipchatGenerateTokenResponse GenerateToken(
             GrantType grantType, 
             IEnumerable<TokenScope> scopes,
-            string basicAuthUsername = null, 
-            string basicAuthPassword = null, 
             string username = null,  
             string code = null, 
             string redirectUri = null, 
             string password = null, 
             string refreshToken = null)
         {
-           using (JsonSerializerConfigScope())
+            using (JsonSerializerConfigScope())
             {
                 var request = new GenerateTokenRequest
                 {
@@ -139,26 +136,12 @@ namespace HipchatApiV2
                     Scope = string.Join(" ", scopes.Select(x => x.ToString()))
                 };
 
-                Action<HttpWebRequest> requestFilter = x => { };
-                if (!basicAuthUsername.IsEmpty() && !basicAuthPassword.IsEmpty())
-                {
-                    var auth = string.Format("{0}:{1}", basicAuthUsername, basicAuthPassword);
-                    var encrypted = Convert.ToBase64String(Encoding.ASCII.GetBytes(auth));
-                    var creds = string.Format("{0} {1}", "Basic", encrypted);
-                    requestFilter = x => x.Headers[HttpRequestHeader.Authorization] = creds;
-                }
-
-
-
-                var endpoint = HipchatEndpoints.GenerateTokenEndpoint;
-
-                var form = request.FormEncodeHipchatRequest();
                 try
                 {
-                    var response = endpoint
-                        .PostToUrl(request.FormEncodeHipchatRequest(), requestFilter: requestFilter)
+                    return HipchatEndpoints.GenerateTokenEndpoint
+                        .AddHipchatAuthentication(_authToken)
+                        .PostJsonToUrl(request)
                         .FromJson<HipchatGenerateTokenResponse>();
-                    return response;
                 }
                 catch (Exception exception)
                 {
@@ -168,7 +151,6 @@ namespace HipchatApiV2
                     throw ExceptionHelpers.GeneralExceptionHelper(exception, "GenerateToken");
                 }
             }
-
         }
 
         #region Private Message to User
@@ -743,6 +725,51 @@ namespace HipchatApiV2
                         throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
 
                     throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllRooms");
+                }
+            }
+        }
+        #endregion
+
+        #region ViewRoomHistory
+        /// <summary>
+        /// Fetch chat history for this room
+        /// </summary>
+        /// <param name="startIndex">The start index for the result set</param>
+        /// <param name="maxResults">The maximum number of results. Valid length 0-100</param>
+        /// <param name="includeArchived">Filter rooms</param>
+        /// <returns>A HipchatGetAllRoomsResponse</returns>
+        /// <remarks>
+        /// Authentication required, with scope view_group, view_messages. https://www.hipchat.com/docs/apiv2/method/view_room_history
+        /// </remarks>
+        public HipchatViewRoomHistoryResponse ViewRoomHistory(string roomName, string date = "recent", string timezone = "UTC", int startIndex = 0, int maxResults = 100, bool reverse = true)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                if (roomName.IsEmpty() || roomName.Length > 100)
+                    throw new ArgumentOutOfRangeException("roomName", "Valid roomName length is 1-100."); 
+                if (startIndex > 100)
+                    throw new ArgumentOutOfRangeException("startIndex", "startIndex must be between 0 and 100");
+                if (maxResults > 1000)
+                    throw new ArgumentOutOfRangeException("maxResults", "maxResults must be between 0 and 1000");
+
+                try
+                {
+                    return HipchatEndpoints.ViewRoomHistoryEndpoint.Fmt(roomName)
+                        .AddQueryParam("date", date)
+                        .AddQueryParam("timezone", timezone)
+                        .AddQueryParam("start-index", startIndex)
+                        .AddQueryParam("max-results", maxResults)
+                        .AddQueryParam("reverse", reverse)
+                        .AddHipchatAuthentication(_authToken)
+                        .GetJsonFromUrl()
+                        .FromJson<HipchatViewRoomHistoryResponse>();
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "ViewRoomHistory");
                 }
             }
         }
