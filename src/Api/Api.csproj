@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\EmoticonType.cs" />
+    <Compile Include="Exceptions\HipchatRoomNotFoundException.cs" />
     <Compile Include="Requests\CreateUserRequest.cs" />
     <Compile Include="Requests\GetAllEmoticonsRequest.cs" />
     <Compile Include="Requests\PrivateMessageUserRequest.cs" />
