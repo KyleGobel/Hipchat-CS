@@ -8,6 +8,7 @@
     <version>0.0.0</version>
     <authors>Kyle Gobel</authors>
     <description>An easy to use C# wrapper around the Hipchat v2 API</description>
+    <iconUrl>http://i.imgur.com/RUv8sSn.png</iconUrl>
     <language>en-US</language>
     <projectUrl>https://github.com/KyleGobel/Hipchat-CS/</projectUrl>
     <dependencies>
