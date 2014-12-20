@@ -333,7 +333,7 @@ namespace HipchatApiV2
                 try
                 {
 
-                    HipchatEndpoints.UpdateRoomEndpoingFormat.Fmt(roomName)
+                    HipchatEndpoints.UpdateRoomEndpointFormat.Fmt(roomName)
                         .AddHipchatAuthentication(_authToken)
                         .PutJsonToUrl(data: request, responseFilter: r =>
                         {
