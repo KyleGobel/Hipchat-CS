@@ -9,28 +9,29 @@ Can be installed through nuget.
 Install-Package Hipchat-CS
 ```
 
-**Work in progress**
+Not all methods are added yet, but if you find something you need, feel free to create a pull request, or request support for it in the issues.
 
-Finished Methods
-- CreateRoom
-- CreateWebHook
-- DeleteRoom
-- DeleteWebhook
-- GenerateToken
-- GetAllEmoticons
-- GetAllRooms
-- GetAllUsers
-- GetAllWebhooks
-- GetEmoticon
-- GetRoom
-- SendNotification
-- SetTopic
-- UpdateRoom
-- CreateUser
-- DeleteUser
+
+**Getting Started**
+
+Before you can use any of the methods you need an API key, or an auth token.
+
+The easiest method is to login to hipchat, click on Account Settings, click on *API Access* and you should see your personal bearer token there
+
+![Auth pic](http://i.imgur.com/UzievNL.png)
+
+Using this method will access the api as yourself (all notifications/messages sent will be from you).
+
+Once you have your api key, you can easily use the api
+
+```csharp 
+var client = new HipchatClient(apiKey);
+
+//assume we have a room named 'My Room'
+client.SendNotification("My Room", "This is your captain speaking");
+```
 
 All methods have several optional paramaters and or overloads, fully documented.  Check intellisense.
-
 
 **Examples**
 
