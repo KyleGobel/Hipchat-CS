@@ -173,9 +173,22 @@ namespace HipchatApiV2
 
         #region Private Message to User
 
+        /// <summary>
+        /// Sends a user a private message. 
+        /// </summary>
+        /// <param name="idOrEmailOrMention">The id, email address, or mention name (beginning with an '@') of the user to send a message to.</param>
+        /// <param name="message">The message body. Valid length range: 1 - 10000.</param>
+        /// <param name="notify">Whether this message should trigger a user notification (change the tab color, play a sound, notify mobile phones, etc). Each recipient's notification preferences are taken into account.</param>
+        /// <param name="messageFormat">Determines how the message is treated by our server and rendered inside HipChat applications</param>
+        /// <remarks>
+        ///  Auth required with scope 'send_message'. https://www.hipchat.com/docs/apiv2/method/private_message_user
+        /// </remarks>
         public void PrivateMessageUser(string idOrEmailOrMention, string message, bool notify = false,
             HipchatMessageFormat messageFormat = HipchatMessageFormat.Text)
         {
+            if (idOrEmailOrMention.IsEmpty() || idOrEmailOrMention.Length > 10000)
+                throw new ArgumentOutOfRangeException("idOrEmailOrMention", "Valid length range: 1 - 10000.");
+
             var endpoint = HipchatEndpoints.PrivateMessageUserEnpointFormat
                 .Fmt(idOrEmailOrMention);
 
