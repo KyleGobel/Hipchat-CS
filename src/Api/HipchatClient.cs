@@ -171,6 +171,44 @@ namespace HipchatApiV2
 
         }
 
+        #region Private Message to User
+
+        public void PrivateMessageUser(string idOrEmailOrMention, string message, bool notify = false,
+            HipchatMessageFormat messageFormat = HipchatMessageFormat.Text)
+        {
+            var endpoint = HipchatEndpoints.PrivateMessageUserEnpointFormat
+                .Fmt(idOrEmailOrMention);
+
+            var request = new PrivateMessageUserRequest
+            {
+                Message = message,
+                Notify = notify,
+                MessageFormat = messageFormat
+            };
+
+            try
+            {
+                using (JsonSerializerConfigScope())
+                {
+                    endpoint
+                        .AddHipchatAuthentication(_authToken)
+                        .PostJsonToUrl(request);
+                }
+
+
+                //We could assert that we get a 204 here and return a boolean success / failure
+                //but i guess we'll just assume everything went well or we would have got an exception
+            }
+            catch (Exception x)
+            {
+                if (x is WebException)
+                    throw ExceptionHelpers.WebExceptionHelper(x as WebException, "send_message");
+
+                throw ExceptionHelpers.GeneralExceptionHelper(x, "PrivateMessageUser");
+            }
+
+        }
+        #endregion
         #region GetEmoticon
         /// <summary>
         /// Get emoticon details
