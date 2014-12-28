@@ -24,8 +24,9 @@ namespace HipchatApiV2.Responses
         public string Message { get; set; }
         public HipchatMessageFormat MessageFormat { get; set; }
         public MessageType Type { get; set; }
+        public HipchatFile File { get; set; }
         public HipchatLink Links { get; set; }
 
-        // TODO: File
+        // TODO: Mentions
     }
 }

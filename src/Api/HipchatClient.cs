@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using HipchatApiV2.Enums;
 using HipchatApiV2.Requests;
 using HipchatApiV2.Responses;
@@ -637,6 +635,52 @@ namespace HipchatApiV2
         }
         #endregion
 
+        #region ShareFileWithRoom
+        /// <summary>
+        /// Share a file with a room
+        /// </summary>
+        /// <param name="roomName">The id or name of the room</param>
+        /// <param name="fileFullPath">The full path of the file.</param>
+        /// <param name="message">The optional message.</param>
+        /// <returns>
+        /// true if the file was successfully shared
+        /// </returns>
+        /// <remarks>
+        /// Auth required with scope 'send_message'. https://www.hipchat.com/docs/apiv2/method/share_file_with_room
+        /// </remarks>
+        public bool ShareFileWithRoom(string roomName, string fileFullPath, string message = null)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                var request = new ShareFileWithRoomRequest
+                {
+                    File = fileFullPath,
+                    Message = message
+                };
+
+                var result = false;
+                try
+                {
+                    var statusCode = HipchatEndpoints.ShareFileWithRoomEndpointFormat
+                        .Fmt(roomName)
+                        .AddHipchatAuthentication(_authToken)
+                        .PostHttpContentToUrl(request.EncodeMultipartRelatedHipchatRequest());
+
+                    if (statusCode.HasValue && statusCode.Value == HttpStatusCode.NoContent)
+                        result = true;
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "share_file_with_room");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "ShareFileWithRoom");
+                }
+                return result;
+            }
+        }
+        #endregion
+
         #region DeleteRoom
         /// <summary>
         /// Delets a room and kicks the current particpants.
@@ -734,10 +778,26 @@ namespace HipchatApiV2
         /// <summary>
         /// Fetch chat history for this room
         /// </summary>
+        /// <param name="roomName">Name of the room.</param>
+        /// <param name="date">Either the latest date to fetch history for in ISO-8601 format, or 'recent' to fetch the latest 75 messages. Note, paging isn't supported for 'recent', however they are real-time values, whereas date queries may not include the most recent messages.</param>
+        /// <param name="timezone">Your timezone. Must be a supported timezone name, please see wikipedia TZ database page.</param>
         /// <param name="startIndex">The start index for the result set</param>
         /// <param name="maxResults">The maximum number of results. Valid length 0-100</param>
-        /// <param name="includeArchived">Filter rooms</param>
-        /// <returns>A HipchatGetAllRoomsResponse</returns>
+        /// <param name="reverse">Reverse the output such that the oldest message is first. For consistent paging, set to <c>false</c>.</param>
+        /// <returns>
+        /// A HipchatGetAllRoomsResponse
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// roomName;Valid roomName length is 1-100.
+        /// or
+        /// date;Valid date should be passed.
+        /// or
+        /// timezone;Valid timezone should be passed.
+        /// or
+        /// startIndex;startIndex must be between 0 and 100
+        /// or
+        /// maxResults;maxResults must be between 0 and 1000
+        /// </exception>
         /// <remarks>
         /// Authentication required, with scope view_group, view_messages. https://www.hipchat.com/docs/apiv2/method/view_room_history
         /// </remarks>
@@ -746,7 +806,11 @@ namespace HipchatApiV2
             using (JsonSerializerConfigScope())
             {
                 if (roomName.IsEmpty() || roomName.Length > 100)
-                    throw new ArgumentOutOfRangeException("roomName", "Valid roomName length is 1-100."); 
+                    throw new ArgumentOutOfRangeException("roomName", "Valid roomName length is 1-100.");
+                if (date.IsEmpty())
+                    throw new ArgumentOutOfRangeException("date", "Valid date should be passed.");
+                if (timezone.IsEmpty())
+                    throw new ArgumentOutOfRangeException("timezone", "Valid timezone should be passed."); 
                 if (startIndex > 100)
                     throw new ArgumentOutOfRangeException("startIndex", "startIndex must be between 0 and 100");
                 if (maxResults > 1000)

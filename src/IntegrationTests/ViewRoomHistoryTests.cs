@@ -22,8 +22,9 @@ namespace IntegrationTests
             _existingRoomId = room.Id;
             _existingRoomName = "Test ViewRoomHistory";
 
-            // Add to history
-            var message = _client.SendNotification(_existingRoomId, "First entry to history");
+            // Add notifications to history
+            _client.SendNotification(_existingRoomId, "First entry to history");
+            _client.ShareFileWithRoom(_existingRoomId.ToString(), @"..\..\Data\RUv8sSn.png", "Second entry to history with file");
         }
 
         [Fact(DisplayName = "Can view full room history")]
@@ -32,8 +33,8 @@ namespace IntegrationTests
             var roomHistory = _client.ViewRoomHistory(_existingRoomName);
 
             Assert.NotNull(roomHistory);
-            Assert.Single(roomHistory.Items);
-            var historyItem = roomHistory.Items.Single();
+            Assert.Equal(2, roomHistory.Items.Count);
+            var historyItem = roomHistory.Items.First();
             Assert.NotNull(historyItem.Id);
             Assert.NotNull(historyItem.Color);
             Assert.NotNull(historyItem.Date);
@@ -41,6 +42,17 @@ namespace IntegrationTests
             Assert.NotNull(historyItem.Message);
             Assert.NotNull(historyItem.MessageFormat);
             Assert.NotNull(historyItem.Type);
+            Assert.Null(historyItem.File);
+
+            historyItem = roomHistory.Items.Last();
+            Assert.NotNull(historyItem.Id);
+            Assert.NotNull(historyItem.Color);
+            Assert.NotNull(historyItem.Date);
+            Assert.NotNull(historyItem.From);
+            Assert.NotNull(historyItem.Message);
+            Assert.NotNull(historyItem.MessageFormat);
+            Assert.NotNull(historyItem.Type);
+            Assert.NotNull(historyItem.File);
         }
 
         public void Dispose()
