@@ -980,5 +980,84 @@ namespace HipchatApiV2
             }
         }
         #endregion
+
+        #region AddMember
+        /// <summary>
+        /// Add a member to a private room
+        /// </summary>
+        /// <param name="roomName">The name of the room</param>
+        /// <param name="idOrEmail">The id, email address, or mention name (beginning with an '@') of the user to delete.</param>
+        /// <returns>true if the call succeeded. </returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_room'.
+        /// https://www.hipchat.com/docs/apiv2/method/add_member
+        /// </remarks>
+        public bool AddMember(string roomName, string idOrEmail)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                var result = false;
+                try
+                {
+                    HipchatEndpoints.AddMemberEnpdointFormat
+                        .Fmt(roomName, idOrEmail)
+                        .AddHipchatAuthentication(_authToken)
+                        .PutJsonToUrl(null, responseFilter: resp =>
+                        {
+                            if (resp.StatusCode == HttpStatusCode.NoContent)
+                                result = true;
+                        });
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "AddMember");
+                }
+                return result;
+            }
+        }
+        #endregion
+
+        #region UpdatePhoto
+        /// <summary>
+        /// Update a user photo
+        /// </summary>
+        /// <param name="idOrEmail">The id, email address, or mention name (beginning with an '@') of the user to delete.</param>
+        /// <param name="photo"> Base64 string of the photo</param>
+        /// <returns>true if the call succeeded.   </returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_room'.
+        /// https://www.hipchat.com/docs/apiv2/method/update_photo
+        /// </remarks>
+        public bool UpdatePhoto(string idOrEmail, string photo)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                var result = false;
+                try
+                {                    
+                    HipchatEndpoints.UpdatePhotoEnpdointFormat
+                        .Fmt(idOrEmail)
+                        .AddHipchatAuthentication(_authToken)
+                        .PutJsonToUrl(new { photo = photo }, responseFilter: resp =>
+                        {
+                            if (resp.StatusCode == HttpStatusCode.NoContent)
+                                result = true;
+                        });
+
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "UpdatePhoto");
+                }
+                return result;
+            }
+        }
+        #endregion
     }
 }
