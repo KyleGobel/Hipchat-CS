@@ -37,6 +37,8 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,12 +46,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\MessageType.cs" />
     <Compile Include="Enums\EmoticonType.cs" />
     <Compile Include="Exceptions\HipchatRoomNotFoundException.cs" />
+    <Compile Include="Requests\ShareFileWithRoomRequest.cs" />
     <Compile Include="Requests\CreateUserRequest.cs" />
     <Compile Include="Requests\GetAllEmoticonsRequest.cs" />
     <Compile Include="Requests\PrivateMessageUserRequest.cs" />
     <Compile Include="Requests\UpdateRoomRequest.cs" />
+    <Compile Include="Responses\HipchatFile.cs" />
+    <Compile Include="Responses\HipchatViewRoomHistoryResponse.cs" />
     <Compile Include="Responses\HipchatCreateUserResponse.cs" />
     <Compile Include="Responses\HipchatGetEmoticonResponse.cs" />
     <Compile Include="Responses\HipchatGetAllEmoticonsResponse.cs" />

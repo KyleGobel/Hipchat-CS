@@ -17,8 +17,10 @@ namespace HipchatApiV2
         private string SendMessageEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}/notification?auth_token={{1}}", EndpointHost); } }
         public static string CreateRoomEndpoint { get { return String.Format("https://{0}/v2/room", EndpointHost); } }
         public static string GetAllRoomsEndpoint { get { return String.Format("https://{0}/v2/room", EndpointHost); } }
+        public static string ViewRoomHistoryEndpoint { get { return String.Format("https://{0}/v2/room/{{0}}/history", EndpointHost); } }
         public static string GenerateTokenEndpoint { get { return String.Format("https://{0}/v2/oauth/token", EndpointHost); } }
         public static string SendNotificationEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}/notification", EndpointHost); } }
+        public static string ShareFileWithRoomEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}/share/file", EndpointHost); } }
         public static string GetRoomEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}", EndpointHost); } }
         public static string DeleteRoomEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}", EndpointHost); } }
         public static string GetAllWebhooksEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}/webhook", EndpointHost); } }

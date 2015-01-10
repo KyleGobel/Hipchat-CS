@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using HipchatApiV2;
 using HipchatApiV2.Enums;
 using Xunit;
@@ -8,16 +9,16 @@ namespace IntegrationTests
     public class GenerateAuthTokenExample
     {
         //[Fact]
-        public void GenerateAuthToken()
+        public void GenerateAuthTokenWithUsernameAndPassword()
         {
-            //insert your authId and auth Secret here
-            const string authId = "";
-            const string authSecret = "";
+            //insert your username and password here
+            const string username = "";
+            const string password = "";
 
-            var client = new HipchatClient();
+            var client = new HipchatClient("YourToken");
 
-            var token = client.GenerateToken(GrantType.ClientCredentials,
-                new List<TokenScope> {TokenScope.SendNotification}, authId, authSecret);
+            var token = client.GenerateToken(GrantType.Password, Enumerable.Empty<TokenScope>(),
+                username, password:password);
 
             Assert.NotNull(token);
         }
