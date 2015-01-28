@@ -15,9 +15,17 @@ namespace IntegrationTests
             HipchatApiConfig.AuthToken = TestsConfig.AuthToken;
             _client = new HipchatClient();
 
-            var room = _client.CreateRoom("Test Webhooks Room");
-            _existingRoomId = room.Id;
 
+            try
+            {
+                var existingRoom = _client.GetRoom("Test Webhooks Room");
+                _existingRoomId = existingRoom.Id;
+            }
+            catch (Exception)
+            {
+                 var room = _client.CreateRoom("Test Webhooks Room");
+                _existingRoomId = room.Id;
+            }
         }
 
         [Fact(DisplayName = "Webhooks Tests")]

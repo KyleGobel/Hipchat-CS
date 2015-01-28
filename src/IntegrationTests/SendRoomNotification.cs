@@ -13,9 +13,10 @@ namespace IntegrationTests
         private readonly HipchatClient _client;
         public SendRoomNotification()
         {
+
             HipchatApiConfig.AuthToken = TestsConfig.AuthToken;
             _client = new HipchatClient();
-            _existingRoomId = _client.CreateRoom("Send Notification Test Room").Id;
+            _existingRoomId = TestHelpers.GetARoomId(_client,"Send Notification Test Room");
 
         }
         [Fact(DisplayName = "Can send a room notification")]

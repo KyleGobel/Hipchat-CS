@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using HipchatApiV2.Enums;
 using HipchatApiV2.Requests;
 using HipchatApiV2.Responses;
@@ -102,13 +100,12 @@ namespace HipchatApiV2
             }
         }
         #endregion
+
         /// <summary>
         /// Gets an OAuth token for requested grant type. 
         /// </summary>
         /// <param name="grantType">The type of grant request</param>
         /// <param name="scopes">List of scopes that is requested</param>
-        /// <param name="basicAuthUsername">If you supply this, the basicAuthUsername and basicAuthPassword will be passed as credentials in BasicAuthentication format.  (Needed to generate a token for an addon)</param>
-        /// <param name="basicAuthPassword">If you supply this, the basicAuthUsername and basicAuthPassword will be passed as credentials in BasicAuthentication format. </param>
         /// <param name="username">The user name to generate a token on behalf of.  Only valid in
         /// the 'Password' and 'ClientCredentials' grant types.</param>
         /// <param name="code">The authorization code to exchange for an access token.  Only valid in the 'AuthorizationCode' grant type</param>
@@ -118,15 +115,13 @@ namespace HipchatApiV2
         public HipchatGenerateTokenResponse GenerateToken(
             GrantType grantType, 
             IEnumerable<TokenScope> scopes,
-            string basicAuthUsername = null, 
-            string basicAuthPassword = null, 
             string username = null,  
             string code = null, 
             string redirectUri = null, 
             string password = null, 
             string refreshToken = null)
         {
-           using (JsonSerializerConfigScope())
+            using (JsonSerializerConfigScope())
             {
                 var request = new GenerateTokenRequest
                 {
@@ -139,26 +134,12 @@ namespace HipchatApiV2
                     Scope = string.Join(" ", scopes.Select(x => x.ToString()))
                 };
 
-                Action<HttpWebRequest> requestFilter = x => { };
-                if (!basicAuthUsername.IsEmpty() && !basicAuthPassword.IsEmpty())
-                {
-                    var auth = string.Format("{0}:{1}", basicAuthUsername, basicAuthPassword);
-                    var encrypted = Convert.ToBase64String(Encoding.ASCII.GetBytes(auth));
-                    var creds = string.Format("{0} {1}", "Basic", encrypted);
-                    requestFilter = x => x.Headers[HttpRequestHeader.Authorization] = creds;
-                }
-
-
-
-                var endpoint = HipchatEndpoints.GenerateTokenEndpoint;
-
-                var form = request.FormEncodeHipchatRequest();
                 try
                 {
-                    var response = endpoint
-                        .PostToUrl(request.FormEncodeHipchatRequest(), requestFilter: requestFilter)
+                    return HipchatEndpoints.GenerateTokenEndpoint
+                        .AddHipchatAuthentication(_authToken)
+                        .PostJsonToUrl(request)
                         .FromJson<HipchatGenerateTokenResponse>();
-                    return response;
                 }
                 catch (Exception exception)
                 {
@@ -168,9 +149,59 @@ namespace HipchatApiV2
                     throw ExceptionHelpers.GeneralExceptionHelper(exception, "GenerateToken");
                 }
             }
-
         }
 
+        #region Private Message to User
+
+        /// <summary>
+        /// Sends a user a private message. 
+        /// </summary>
+        /// <param name="idOrEmailOrMention">The id, email address, or mention name (beginning with an '@') of the user to send a message to.</param>
+        /// <param name="message">The message body. Valid length range: 1 - 10000.</param>
+        /// <param name="notify">Whether this message should trigger a user notification (change the tab color, play a sound, notify mobile phones, etc). Each recipient's notification preferences are taken into account.</param>
+        /// <param name="messageFormat">Determines how the message is treated by our server and rendered inside HipChat applications</param>
+        /// <remarks>
+        ///  Auth required with scope 'send_message'. https://www.hipchat.com/docs/apiv2/method/private_message_user
+        /// </remarks>
+        public void PrivateMessageUser(string idOrEmailOrMention, string message, bool notify = false,
+            HipchatMessageFormat messageFormat = HipchatMessageFormat.Text)
+        {
+            if (idOrEmailOrMention.IsEmpty() || idOrEmailOrMention.Length > 10000)
+                throw new ArgumentOutOfRangeException("idOrEmailOrMention", "Valid length range: 1 - 10000.");
+
+            var endpoint = HipchatEndpoints.PrivateMessageUserEnpointFormat
+                .Fmt(idOrEmailOrMention);
+
+            var request = new PrivateMessageUserRequest
+            {
+                Message = message,
+                Notify = notify,
+                MessageFormat = messageFormat
+            };
+
+            try
+            {
+                using (JsonSerializerConfigScope())
+                {
+                    endpoint
+                        .AddHipchatAuthentication(_authToken)
+                        .PostJsonToUrl(request);
+                }
+
+
+                //We could assert that we get a 204 here and return a boolean success / failure
+                //but i guess we'll just assume everything went well or we would have got an exception
+            }
+            catch (Exception x)
+            {
+                if (x is WebException)
+                    throw ExceptionHelpers.WebExceptionHelper(x as WebException, "send_message");
+
+                throw ExceptionHelpers.GeneralExceptionHelper(x, "PrivateMessageUser");
+            }
+
+        }
+        #endregion
         #region GetEmoticon
         /// <summary>
         /// Get emoticon details
@@ -333,7 +364,7 @@ namespace HipchatApiV2
                 try
                 {
 
-                    HipchatEndpoints.UpdateRoomEndpoingFormat.Fmt(roomName)
+                    HipchatEndpoints.UpdateRoomEndpointFormat.Fmt(roomName)
                         .AddHipchatAuthentication(_authToken)
                         .PutJsonToUrl(data: request, responseFilter: r =>
                         {
@@ -604,6 +635,52 @@ namespace HipchatApiV2
         }
         #endregion
 
+        #region ShareFileWithRoom
+        /// <summary>
+        /// Share a file with a room
+        /// </summary>
+        /// <param name="roomName">The id or name of the room</param>
+        /// <param name="fileFullPath">The full path of the file.</param>
+        /// <param name="message">The optional message.</param>
+        /// <returns>
+        /// true if the file was successfully shared
+        /// </returns>
+        /// <remarks>
+        /// Auth required with scope 'send_message'. https://www.hipchat.com/docs/apiv2/method/share_file_with_room
+        /// </remarks>
+        public bool ShareFileWithRoom(string roomName, string fileFullPath, string message = null)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                var request = new ShareFileWithRoomRequest
+                {
+                    File = fileFullPath,
+                    Message = message
+                };
+
+                var result = false;
+                try
+                {
+                    var statusCode = HipchatEndpoints.ShareFileWithRoomEndpointFormat
+                        .Fmt(roomName)
+                        .AddHipchatAuthentication(_authToken)
+                        .PostHttpContentToUrl(request.EncodeMultipartRelatedHipchatRequest());
+
+                    if (statusCode.HasValue && statusCode.Value == HttpStatusCode.NoContent)
+                        result = true;
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "share_file_with_room");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "ShareFileWithRoom");
+                }
+                return result;
+            }
+        }
+        #endregion
+
         #region DeleteRoom
         /// <summary>
         /// Delets a room and kicks the current particpants.
@@ -666,20 +743,21 @@ namespace HipchatApiV2
         /// <remarks>
         /// Auth required with scope 'view_group'. https://www.hipchat.com/docs/apiv2/method/get_all_rooms
         /// </remarks>
-        public HipchatGetAllRoomsResponse GetAllRooms(int startIndex = 0, int maxResults = 100, bool includeArchived = false)
+        public HipchatGetAllRoomsResponse GetAllRooms(int startIndex = 0, int maxResults = 100, bool includePrivate = false, bool includeArchived = false)
         {
             using (JsonSerializerConfigScope())
             {
                 if (startIndex > 100)
                     throw new ArgumentOutOfRangeException("startIndex", "startIndex must be between 0 and 100");
-                if (maxResults > 100)
-                    throw new ArgumentOutOfRangeException("maxResults", "maxResults must be between 0 and 100");
+                if (maxResults > 1000)
+                    throw new ArgumentOutOfRangeException("maxResults", "maxResults must be between 0 and 1000");
 
                 try
                 {
                     return HipchatEndpoints.GetAllRoomsEndpoint
                         .AddQueryParam("start-index", startIndex)
                         .AddQueryParam("max-results", maxResults)
+                        .AddQueryParam("include-private", includePrivate)
                         .AddQueryParam("include-archived", includeArchived)
                         .AddHipchatAuthentication(_authToken)
                         .GetJsonFromUrl()
@@ -691,6 +769,71 @@ namespace HipchatApiV2
                         throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
 
                     throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetAllRooms");
+                }
+            }
+        }
+        #endregion
+
+        #region ViewRoomHistory
+        /// <summary>
+        /// Fetch chat history for this room
+        /// </summary>
+        /// <param name="roomName">Name of the room.</param>
+        /// <param name="date">Either the latest date to fetch history for in ISO-8601 format, or 'recent' to fetch the latest 75 messages. Note, paging isn't supported for 'recent', however they are real-time values, whereas date queries may not include the most recent messages.</param>
+        /// <param name="timezone">Your timezone. Must be a supported timezone name, please see wikipedia TZ database page.</param>
+        /// <param name="startIndex">The start index for the result set</param>
+        /// <param name="maxResults">The maximum number of results. Valid length 0-100</param>
+        /// <param name="reverse">Reverse the output such that the oldest message is first. For consistent paging, set to <c>false</c>.</param>
+        /// <returns>
+        /// A HipchatGetAllRoomsResponse
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// roomName;Valid roomName length is 1-100.
+        /// or
+        /// date;Valid date should be passed.
+        /// or
+        /// timezone;Valid timezone should be passed.
+        /// or
+        /// startIndex;startIndex must be between 0 and 100
+        /// or
+        /// maxResults;maxResults must be between 0 and 1000
+        /// </exception>
+        /// <remarks>
+        /// Authentication required, with scope view_group, view_messages. https://www.hipchat.com/docs/apiv2/method/view_room_history
+        /// </remarks>
+        public HipchatViewRoomHistoryResponse ViewRoomHistory(string roomName, string date = "recent", string timezone = "UTC", int startIndex = 0, int maxResults = 100, bool reverse = true)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                if (roomName.IsEmpty() || roomName.Length > 100)
+                    throw new ArgumentOutOfRangeException("roomName", "Valid roomName length is 1-100.");
+                if (date.IsEmpty())
+                    throw new ArgumentOutOfRangeException("date", "Valid date should be passed.");
+                if (timezone.IsEmpty())
+                    throw new ArgumentOutOfRangeException("timezone", "Valid timezone should be passed."); 
+                if (startIndex > 100)
+                    throw new ArgumentOutOfRangeException("startIndex", "startIndex must be between 0 and 100");
+                if (maxResults > 1000)
+                    throw new ArgumentOutOfRangeException("maxResults", "maxResults must be between 0 and 1000");
+
+                try
+                {
+                    return HipchatEndpoints.ViewRoomHistoryEndpoint.Fmt(roomName)
+                        .AddQueryParam("date", date)
+                        .AddQueryParam("timezone", timezone)
+                        .AddQueryParam("start-index", startIndex)
+                        .AddQueryParam("max-results", maxResults)
+                        .AddQueryParam("reverse", reverse)
+                        .AddHipchatAuthentication(_authToken)
+                        .GetJsonFromUrl()
+                        .FromJson<HipchatViewRoomHistoryResponse>();
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "ViewRoomHistory");
                 }
             }
         }
@@ -855,6 +998,157 @@ namespace HipchatApiV2
             return SetTopic(roomId.ToString(CultureInfo.InvariantCulture), topic);
         }
 
+        #endregion
+
+        #region CreateUser
+        /// <summary>
+        /// Create a new user
+        /// </summary>
+        /// <returns>A HipchatCreateUserReponse</returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_group'. https://www.hipchat.com/docs/apiv2/method/create_user
+        /// </remarks>
+        public HipchatCreateUserResponse CreateUser(CreateUserRequest request)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                if (string.IsNullOrEmpty(request.Name) || request.Name.Length > 50)
+                {
+                    throw new ArgumentOutOfRangeException("name", "Valid length range: 1 - 50.");
+                }
+
+                try
+                {
+                    return HipchatEndpoints.CreateUserEndpointFormat
+                        .AddHipchatAuthentication(_authToken)
+                        .PostJsonToUrl(request)
+                        .FromJson<HipchatCreateUserResponse>();
+                } 
+                catch (Exception exception) 
+                {
+                    Console.WriteLine(exception.Message);
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_group");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "CreateUser");
+                }
+            }
+        }
+        #endregion
+
+        #region DeleteUser
+        /// <summary>
+        /// Delete a user
+        /// </summary>
+        /// <param name="idOrEmail">The id, email address, or mention name (beginning with an '@') of the user to delete.</param>
+        /// <returns>A HipchatDeleteUserReponse</returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_group'. https://api.hipchat.com/v2/user/{id_or_email}
+        /// </remarks>
+        public bool DeleteUser(string idOrEmail)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                var result = false;
+                try 
+                {
+                    HipchatEndpoints.DeleteUserEndpointFormat.Fmt(idOrEmail)
+                        .AddHipchatAuthentication(_authToken)
+                        .DeleteFromUrl(responseFilter: x =>
+                        {
+                            if (x.StatusCode == HttpStatusCode.NoContent)
+                                result = true;
+                        });
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_group");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "DeleteUser");
+                }
+                return result;
+            }
+        }
+        #endregion
+
+        #region AddMember
+        /// <summary>
+        /// Add a member to a private room
+        /// </summary>
+        /// <param name="roomName">The name of the room</param>
+        /// <param name="idOrEmail">The id, email address, or mention name (beginning with an '@') of the user to delete.</param>
+        /// <returns>true if the call succeeded. </returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_room'.
+        /// https://www.hipchat.com/docs/apiv2/method/add_member
+        /// </remarks>
+        public bool AddMember(string roomName, string idOrEmail)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                var result = false;
+                try
+                {
+                    HipchatEndpoints.AddMemberEnpdointFormat
+                        .Fmt(roomName, idOrEmail)
+                        .AddHipchatAuthentication(_authToken)
+                        .PutJsonToUrl(null, responseFilter: resp =>
+                        {
+                            if (resp.StatusCode == HttpStatusCode.NoContent)
+                                result = true;
+                        });
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "AddMember");
+                }
+                return result;
+            }
+        }
+        #endregion
+
+        #region UpdatePhoto
+        /// <summary>
+        /// Update a user photo
+        /// </summary>
+        /// <param name="idOrEmail">The id, email address, or mention name (beginning with an '@') of the user to delete.</param>
+        /// <param name="photo"> Base64 string of the photo</param>
+        /// <returns>true if the call succeeded.   </returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_room'.
+        /// https://www.hipchat.com/docs/apiv2/method/update_photo
+        /// </remarks>
+        public bool UpdatePhoto(string idOrEmail, string photo)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                var result = false;
+                try
+                {                    
+                    HipchatEndpoints.UpdatePhotoEnpdointFormat
+                        .Fmt(idOrEmail)
+                        .AddHipchatAuthentication(_authToken)
+                        .PutJsonToUrl(new { photo = photo }, responseFilter: resp =>
+                        {
+                            if (resp.StatusCode == HttpStatusCode.NoContent)
+                                result = true;
+                        });
+
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_room");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "UpdatePhoto");
+                }
+                return result;
+            }
+        }
         #endregion
     }
 }

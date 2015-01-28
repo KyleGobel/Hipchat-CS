@@ -23,11 +23,20 @@ namespace HipchatApiV2
                     errorMessage = bodyText;
             }
             catch { }
-            
+
             if (!errorMessage.IsEmpty())
             {
-               return new HipchatWebException("\nMessage: '{0}'\nType: '{1}'".Fmt(errorMessage, errorType), exception); 
+                switch (exception.GetStatusCode())
+                {
+                    case 404:
+                        if (errorMessage.Contains("Room not found"))
+                            return new HipchatRoomNotFoundException(errorMessage, exception);
+                        break;
+                }
+                return new HipchatWebException("\nMessage: '{0}'\nType: '{1}'".Fmt(errorMessage, errorType), exception); 
             }
+
+
             if (exception.IsUnauthorized())
             {
                 errorMessage = scopeRequired.IsEmpty()
@@ -54,6 +63,7 @@ namespace HipchatApiV2
 
             if (!errorMessage.IsEmpty())
             {
+
                 return new HipchatWebException("Message: '{0}'\nType: '{1}'".Fmt(errorMessage, errorType), exception);
             }
             return new HipchatGeneralException("An unhandled exception was thrown in '{0}'.  See inner exception for details.".Fmt(methodName), exception);
@@ -72,6 +82,19 @@ namespace HipchatApiV2
             {
                 return reader.ReadToEnd();
             }
+        }
+
+        public static int GetStatusCode(this WebException exception)
+        {
+            if (exception.Status == WebExceptionStatus.ProtocolError)
+            {
+                var resp = exception.Response as HttpWebResponse;
+                if (resp != null)
+                {
+                    return (int)resp.StatusCode;
+                }
+            }
+            return -1;
         }
 
         /// <summary>
