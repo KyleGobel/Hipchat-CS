@@ -301,52 +301,6 @@ namespace HipchatApiV2
 
         #endregion
 
-        #region GetUserInfo
-
-        /// <summary>
-        /// Gets information about the requested user
-        /// </summary>
-        /// <param name="emailOrMentionName">The users email address or mention name beginning with @</param>
-        /// <returns>an object with information about the user</returns>
-        /// <remarks>
-        /// Auth required with scope 'view_group'. https://www.hipchat.com/docs/apiv2/method/view_user
-        /// </remarks>
-        public HipchatGetUserInfoResponse GetUserInfo(string emailOrMentionName)
-        {
-            using (JsonSerializerConfigScope())
-            {
-                try
-                {
-                    return HipchatEndpoints.GetUserInfoEndpoint
-                        .Fmt(emailOrMentionName)
-                        .AddHipchatAuthentication(_authToken)
-                        .GetJsonFromUrl()
-                        .FromJson<HipchatGetUserInfoResponse>();
-                }
-                catch (Exception exception)
-                {
-                    if (exception is WebException)
-                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
-
-                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "GetUserInfo");
-                }
-            }
-        }
-        
-        /// <summary>
-        /// Gets information about the requested user
-        /// </summary>
-        /// <param name="userId">The integer Id of the user</param>
-        /// <returns>an object with information about the user</returns>
-        /// <remarks>
-        /// Auth required with scope 'view_group'. https://www.hipchat.com/docs/apiv2/method/view_user
-        /// </remarks>
-        public HipchatGetUserInfoResponse GetUserInfo(int userId)
-        {
-            return GetUserInfo(userId.ToString(CultureInfo.InvariantCulture));
-        }
-        #endregion
-
         #region UpdateRoom
         /// <summary>
         /// Updates a room
