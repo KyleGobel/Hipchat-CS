@@ -23,6 +23,7 @@ Finished Methods
 - GetAllWebhooks
 - GetEmoticon
 - GetRoom
+- GetUserInfo
 - SendNotification
 - SetTopic
 - UpdateRoom

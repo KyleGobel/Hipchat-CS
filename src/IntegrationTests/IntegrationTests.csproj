@@ -58,6 +58,7 @@
     <Compile Include="SendRoomNotification.cs" />
     <Compile Include="TestsConfig.cs" />
     <Compile Include="UpdateRoomTests.cs" />
+    <Compile Include="GetUserInfoTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Api\Api.csproj">

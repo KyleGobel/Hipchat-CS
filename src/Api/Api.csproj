@@ -47,6 +47,7 @@
     <Compile Include="Enums\EmoticonType.cs" />
     <Compile Include="Requests\GetAllEmoticonsRequest.cs" />
     <Compile Include="Requests\UpdateRoomRequest.cs" />
+    <Compile Include="Responses\HipchatClientInfo.cs" />
     <Compile Include="Responses\HipchatGetEmoticonResponse.cs" />
     <Compile Include="Responses\HipchatGetAllEmoticonsResponse.cs" />
     <Compile Include="Responses\HipchatGetAllUsersResponse.cs" />
@@ -56,6 +57,8 @@
     <Compile Include="Enums\GrantType.cs" />
     <Compile Include="Enums\HipchatMessageFormat.cs" />
     <Compile Include="Enums\TokenScope.cs" />
+    <Compile Include="Responses\HipchatGetUserInfoResponse.cs" />
+    <Compile Include="Responses\HipchatPresence.cs" />
     <Compile Include="Responses\HipchatUser.cs" />
     <Compile Include="Responses\HipchatGetRoomResponse.cs" />
     <Compile Include="HttpHelpers.cs" />
