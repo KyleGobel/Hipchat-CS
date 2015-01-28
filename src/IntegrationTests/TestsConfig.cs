@@ -2,7 +2,7 @@
 {
     public static class TestsConfig
     {
-        public static string AuthToken = "7iw3Ve9VlAFvKF2ylo6aU2gVBip4mNdVrlJrOIdC";
+        public static string AuthToken = "2xv9SIieULT3wxNrmlTU3AtyNtLLFupQFsWFhqry";
         public static int ExistingRoomId = 510675;
     }
 }
