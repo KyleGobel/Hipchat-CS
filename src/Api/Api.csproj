@@ -54,7 +54,10 @@
     <Compile Include="Requests\GetAllEmoticonsRequest.cs" />
     <Compile Include="Requests\PrivateMessageUserRequest.cs" />
     <Compile Include="Requests\UpdateRoomRequest.cs" />
+    <Compile Include="Responses\HipchatClientInfo.cs" />
     <Compile Include="Responses\HipchatFile.cs" />
+    <Compile Include="Responses\HipchatGetUserInfoResponse.cs" />
+    <Compile Include="Responses\HipchatPresence.cs" />
     <Compile Include="Responses\HipchatViewRoomHistoryResponse.cs" />
     <Compile Include="Responses\HipchatCreateUserResponse.cs" />
     <Compile Include="Responses\HipchatGetEmoticonResponse.cs" />
