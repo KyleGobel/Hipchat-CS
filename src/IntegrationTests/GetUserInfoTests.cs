@@ -11,7 +11,7 @@ namespace IntegrationTests
             HipchatApiConfig.AuthToken = TestsConfig.AuthToken;
         }
 
-        [Fact(DisplayName = "Can get user info")]
+        [Fact(DisplayName = "Can get user info", Skip = "Requires an actual userId attached to the auth token to pass")]
         public void CanGetUserInfo()
         {
             var userId = 42494;
