@@ -18,9 +18,8 @@ namespace IntegrationTests
             HipchatApiConfig.AuthToken = TestsConfig.AuthToken;
             _client = new HipchatClient();
 
-            var room = _client.CreateRoom(roomName);
-            _existingRoomId = room.Id;
-            _existingRoomName = "Test ViewRoomHistory";
+            _existingRoomId = TestHelpers.GetARoomId(_client, roomName);
+            _existingRoomName = roomName;
 
             // Add notifications to history
             _client.SendNotification(_existingRoomId, "First entry to history");

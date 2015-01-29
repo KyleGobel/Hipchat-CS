@@ -10,17 +10,16 @@ namespace IntegrationTests
     [Trait("UpdateRoom", "")]
     public class UpdateRoomTests : IDisposable
     {
-        private readonly int _createdRoomId;
+        private readonly int _existingRoomId;
         private readonly HipchatClient _client;
         private readonly HipchatUser _owner;
         public UpdateRoomTests()
         {
             HipchatApiConfig.AuthToken = TestsConfig.AuthToken;
             _client = new HipchatClient();
-            var room = _client.CreateRoom("TestUpdateRoom");
-            _createdRoomId = room.Id;
+             _existingRoomId = TestHelpers.GetARoomId(_client, "TestUpdateRoom");
 
-            var getRoomResponse = _client.GetRoom(_createdRoomId);
+            var getRoomResponse = _client.GetRoom(_existingRoomId);
             _owner = getRoomResponse.Owner;
         }
 
@@ -33,13 +32,13 @@ namespace IntegrationTests
                 Owner = _owner
             };
 
-            var result = _client.UpdateRoom(_createdRoomId, request);
+            var result = _client.UpdateRoom(_existingRoomId, request);
 
             Assert.True(result);
         }
         public void Dispose()
         {
-            _client.DeleteRoom(_createdRoomId);
+            _client.DeleteRoom(_existingRoomId);
         }
     }
 }
