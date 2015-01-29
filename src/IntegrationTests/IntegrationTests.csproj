@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ViewRecentRoomHistoryTests.cs" />
     <Compile Include="ShareFileWithRoom.cs" />
     <Compile Include="ViewRoomHistoryTests.cs" />
     <Compile Include="CreateRoomTests.cs" />
