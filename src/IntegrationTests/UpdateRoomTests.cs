@@ -17,7 +17,8 @@ namespace IntegrationTests
         {
             HipchatApiConfig.AuthToken = TestsConfig.AuthToken;
             _client = new HipchatClient();
-            _createdRoomId = TestHelpers.GetARoomId(_client, "TestUpdateRoom");
+            var room = _client.CreateRoom("TestUpdateRoom");
+            _createdRoomId = room.Id;
 
             var getRoomResponse = _client.GetRoom(_createdRoomId);
             _owner = getRoomResponse.Owner;
