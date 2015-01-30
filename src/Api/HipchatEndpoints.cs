@@ -27,6 +27,7 @@ namespace HipchatApiV2
         public static string DeleteWebhookEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}/webhook/{{1}}", EndpointHost); } }
         public static string UpdateRoomEndpointFormat { get { return String.Format("https://{0}/v2/room/{{0}}", EndpointHost); } }
         public static string GetAllUsersEndpoint { get { return String.Format("https://{0}/v2/user", EndpointHost); } }
+        public static string GetUserInfoEndpoint { get { return String.Format("https://{0}/v2/user/{{0}}", EndpointHost); } }
         public static string SetTopicEnpdointFormat { get { return String.Format("https://{0}/v2/room/{{0}}/topic", EndpointHost); } }
         public static string GetAllEmoticonsEndpoint { get { return String.Format("https://{0}/v2/emoticon", EndpointHost); } }
         public static string GetEmoticonEndpoint { get { return String.Format("https://{0}/v2/emoticon/{{0}}", EndpointHost); } }
