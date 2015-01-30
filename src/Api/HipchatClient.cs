@@ -11,7 +11,7 @@ using ServiceStack.Text;
 
 namespace HipchatApiV2
 {
-    public class HipchatClient
+    public class HipchatClient : IHipchatClient
     {
         private readonly string _authToken;
         /// <summary>
