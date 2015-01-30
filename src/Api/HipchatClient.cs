@@ -884,6 +884,65 @@ namespace HipchatApiV2
         }
         #endregion
 
+        #region ViewRecentRoomHistory
+        /// <summary>
+        /// Fetch latest chat history for this room
+        /// </summary>
+        /// <param name="roomName">Name of the room.</param>
+        /// <param name="notBefore">The id of the message that is oldest in the set of messages to be returned. The server will not return any messages that chronologically precede this message.</param>
+        /// <param name="timezone">Your timezone. Must be a supported timezone name, please see wikipedia TZ database page.</param>
+        /// <param name="startIndex">The start index for the result set</param>
+        /// <param name="maxResults">The maximum number of results. Valid length 0-100</param>
+        /// <returns>
+        /// A HipchatGetAllRoomsResponse
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// roomName;Valid roomName length is 1-100.
+        /// or
+        /// timezone;Valid timezone should be passed.
+        /// or
+        /// startIndex;startIndex must be between 0 and 100
+        /// or
+        /// maxResults;maxResults must be between 0 and 1000
+        /// </exception>
+        /// <remarks>
+        /// Authentication required, with scope view_messages. https://www.hipchat.com/docs/apiv2/method/view_recent_room_history
+        /// </remarks>
+        public HipchatViewRoomHistoryResponse ViewRecentRoomHistory(string roomName, string notBefore = "", string timezone = "UTC", int startIndex = 0, int maxResults = 100)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                if (roomName.IsEmpty() || roomName.Length > 100)
+                    throw new ArgumentOutOfRangeException("roomName", "Valid roomName length is 1-100.");
+                if (timezone.IsEmpty())
+                    throw new ArgumentOutOfRangeException("timezone", "Valid timezone should be passed."); 
+                if (startIndex > 100)
+                    throw new ArgumentOutOfRangeException("startIndex", "startIndex must be between 0 and 100");
+                if (maxResults > 1000)
+                    throw new ArgumentOutOfRangeException("maxResults", "maxResults must be between 0 and 1000");
+
+                try
+                {
+                    return HipchatEndpoints.ViewRecentRoomHistoryEndpoint.Fmt(roomName)
+                        .AddQueryParam("not-before", notBefore)
+                        .AddQueryParam("timezone", timezone)
+                        .AddQueryParam("start-index", startIndex)
+                        .AddQueryParam("max-results", maxResults)
+                        .AddHipchatAuthentication(_authToken)
+                        .GetJsonFromUrl()
+                        .FromJson<HipchatViewRoomHistoryResponse>();
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_messages");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "ViewRecentRoomHistory");
+                }
+            }
+        }
+        #endregion
+        
         #region GetAllWebhooks
         /// <summary>
         /// Gets all webhooks for this room
