@@ -6,7 +6,7 @@ namespace IntegrationTests
 {
     public class TestHelpers
     {
-        public static int GetARoomId(HipchatClient client, string roomName)
+        public static int GetARoomId(IHipchatClient client, string roomName)
         {
             try
             {

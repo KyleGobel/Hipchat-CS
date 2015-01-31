@@ -16,7 +16,7 @@ namespace IntegrationTests
         [Fact(DisplayName = "Can set the room topic of an existing room")]
         public void CanSetRoomTopicOfExistingRoom()
         {
-            var roomId = TestHelpers.GetARoomId((HipchatClient)_client, "Test Set Topic Room");
+            var roomId = TestHelpers.GetARoomId(_client, "Test Set Topic Room");
             var result = _client.SetTopic(roomId, "This is the room's topic");
             Assert.True(result);
         }
