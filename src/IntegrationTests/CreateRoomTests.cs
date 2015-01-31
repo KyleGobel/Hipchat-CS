@@ -16,7 +16,7 @@ namespace IntegrationTests
         [Fact(DisplayName = "Can create a room")]
         public void CanCreateRoom()
         {
-            var client = new HipchatClient();
+            IHipchatClient client = new HipchatClient();
 
             var result = client.CreateRoom(RoomName);
 
