@@ -752,7 +752,7 @@ namespace HipchatApiV2
                     HipchatEndpoints.SetTopicEnpdointFormat
                         .Fmt(roomName)
                         .AddHipchatAuthentication(_authToken)
-                        .PutJsonToUrl(topic, responseFilter: resp =>
+                        .PutJsonToUrl(new {topic}, responseFilter: resp =>
                         {
                             if (resp.StatusCode == HttpStatusCode.NoContent)
                                 result = true;
