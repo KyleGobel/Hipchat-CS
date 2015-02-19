@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
+using System.Xml;
 using HipchatApiV2.Enums;
 using HipchatApiV2.Requests;
 using HipchatApiV2.Responses;
@@ -805,15 +808,63 @@ namespace HipchatApiV2
                 }
             }
         }
+
+        #endregion
+
+        #region UpdateUser
+
+        public bool UpdateUser(string idOrEmail, UpdateUserRequest request)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                var result = false;
+                if (string.IsNullOrEmpty(idOrEmail))
+                {
+                    throw new ArgumentOutOfRangeException("idOrEmail", "Valid id, email address, or mention name (beginning with an '@') of the user required.");
+                }
+                if (string.IsNullOrEmpty(request.Name) || request.Name.Length > 50)
+                {
+                    throw new ArgumentOutOfRangeException("name", "Valid length range: 1 - 50.");
+                }
+                if (string.IsNullOrEmpty(request.Email))
+                {
+                    throw new ArgumentOutOfRangeException("email", "Valid email of the user required.");
+                }
+
+                try
+                {
+                    HipchatEndpoints.UpdateUserEndpointFormat
+                    .Fmt(idOrEmail)
+                    .AddHipchatAuthentication(_authToken)
+                    .PutJsonToUrl(data:request, responseFilter: resp =>
+                    {
+                        if (resp.StatusCode == HttpStatusCode.NoContent)
+                            result = true;
+                    });
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception.Message);
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "admin_group");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "UpdateUser");
+                }
+
+                return result;
+            }
+        }
+
         #endregion
 
         #region DeleteUser
+
         public bool DeleteUser(string idOrEmail)
         {
             using (JsonSerializerConfigScope())
             {
                 var result = false;
-                try 
+                try
                 {
                     HipchatEndpoints.DeleteUserEndpointFormat.Fmt(idOrEmail)
                         .AddHipchatAuthentication(_authToken)

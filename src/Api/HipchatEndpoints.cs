@@ -33,6 +33,7 @@ namespace HipchatApiV2
         public static string GetAllEmoticonsEndpoint { get { return String.Format("https://{0}/v2/emoticon", EndpointHost); } }
         public static string GetEmoticonEndpoint { get { return String.Format("https://{0}/v2/emoticon/{{0}}", EndpointHost); } }
         public static string CreateUserEndpointFormat { get { return String.Format("https://{0}/v2/user", EndpointHost); } }
+        public static string UpdateUserEndpointFormat { get { return String.Format("https://{0}/v2/user/{{0}}", EndpointHost); } }
         public static string DeleteUserEndpointFormat { get { return String.Format("https://{0}/v2/user/{{0}}", EndpointHost); } }
         public static string PrivateMessageUserEnpointFormat {get { return string.Format("https://{0}/v2/user/{{0}}/message", EndpointHost); }}
 

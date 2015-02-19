@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UpdateUserTests.cs" />
     <Compile Include="GetUserInfoTests.cs" />
     <Compile Include="SetRoomTopicTests.cs" />
     <Compile Include="ViewRecentRoomHistoryTests.cs" />
