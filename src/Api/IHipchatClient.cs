@@ -426,6 +426,21 @@ namespace HipchatApiV2
         HipchatCreateUserResponse CreateUser(CreateUserRequest request);
 
         /// <summary>
+        /// Update a user. A guest cannot be updated.
+        /// </summary>
+        /// <param name="idOrEmail">The id, email address, or mention name (beginning with an '@') of the user to update.</param>
+        /// <param name="request">The request.</param>
+        /// <returns>true if the call succeeded. </returns>
+        /// <remarks>
+        /// Auth required with scope 'admin_group'. https://www.hipchat.com/docs/apiv2/method/update_user
+        /// Changing a user's name or admin status will cause them to be briefly disconnected.
+        /// Only works on non-deleted users
+        /// Any missing fields will be treated as deleted, so it is recommended to get the user, modify what you need, then call this resource to update
+        /// As communicated by the HipChat support the presence object cannot be updated using this API.
+        /// </remarks>
+        bool UpdateUser(string idOrEmail, UpdateUserRequest request);
+
+        /// <summary>
         /// Delete a user
         /// </summary>
         /// <param name="idOrEmail">The id, email address, or mention name (beginning with an '@') of the user to delete.</param>
