@@ -945,5 +945,45 @@ namespace HipchatApiV2
             }
         }
         #endregion
+
+
+        #region ViewPrivateChatHistory
+        public HipchatViewRoomHistoryResponse ViewPrivateChatHistory(string user, string date = "recent", string timezone = "UTC", int startIndex = 0, int maxResults = 100, bool reverse = true)
+        {
+            using (JsonSerializerConfigScope())
+            {
+                if (user.IsEmpty() || user.Length > 100)
+                    throw new ArgumentOutOfRangeException("user", "Valid roomName length is 1-100.");
+                if (date.IsEmpty())
+                    throw new ArgumentOutOfRangeException("date", "Valid date should be passed.");
+                if (timezone.IsEmpty())
+                    throw new ArgumentOutOfRangeException("timezone", "Valid timezone should be passed.");
+                if (startIndex > 100)
+                    throw new ArgumentOutOfRangeException("startIndex", "startIndex must be between 0 and 100");
+                if (maxResults > 1000)
+                    throw new ArgumentOutOfRangeException("maxResults", "maxResults must be between 0 and 1000");
+
+                try
+                {
+                    return HipchatEndpoints.ViewPrivateChatHistoryEndpoint.Fmt(user)
+                        .AddQueryParam("date", date)
+                        .AddQueryParam("timezone", timezone)
+                        .AddQueryParam("start-index", startIndex)
+                        .AddQueryParam("max-results", maxResults)
+                        .AddQueryParam("reverse", reverse)
+                        .AddHipchatAuthentication(_authToken)
+                        .GetJsonFromUrl()
+                        .FromJson<HipchatViewRoomHistoryResponse>();
+                }
+                catch (Exception exception)
+                {
+                    if (exception is WebException)
+                        throw ExceptionHelpers.WebExceptionHelper(exception as WebException, "view_group");
+
+                    throw ExceptionHelpers.GeneralExceptionHelper(exception, "ViewPrivateChatHistory");
+                }
+            }
+        }
+        #endregion
     }
 }
