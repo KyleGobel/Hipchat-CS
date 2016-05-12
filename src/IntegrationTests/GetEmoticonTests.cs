@@ -12,7 +12,7 @@ namespace IntegrationTests
             HipchatApiConfig.AuthToken = TestsConfig.AuthToken;
         }
 
-        [Fact(DisplayName = "Can get the emoticon by id")]
+        [Fact(DisplayName = "Can get the emoticon by id", Skip = "Setup auth token")]
         public void CanGetEmoticonById()
         {
             var client = new HipchatClient();
@@ -25,7 +25,7 @@ namespace IntegrationTests
             Assert.True(emoticonById.Width > 0);
         }
 
-        [Fact(DisplayName = "Can get the emoticon by shortcut")]
+        [Fact(DisplayName = "Can get the emoticon by shortcut", Skip = "Setup auth token")]
         public void CanGetEmoticonByShortcut()
         {
             var client = new HipchatClient();
@@ -38,7 +38,7 @@ namespace IntegrationTests
             Assert.True(emoticonByShortcut.Width > 0);
         }
 
-        [Fact(DisplayName = "Can get the emoticon by known shortcut")]
+        [Fact(DisplayName = "Can get the emoticon by known shortcut", Skip = "Setup auth token")]
         public void CanGetEmoticonByKnownShortcut()
         {
             var client = new HipchatClient();

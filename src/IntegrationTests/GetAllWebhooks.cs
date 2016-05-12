@@ -28,7 +28,7 @@ namespace IntegrationTests
             }
         }
 
-        [Fact(DisplayName = "Webhooks Tests")]
+        [Fact(DisplayName = "Webhooks Tests", Skip = "Setup auth token")]
         public void Webhooks()
         {
             var createResult = _client.CreateWebHook(_existingRoomId, "http://myurl.com", "", RoomEvent.RoomNotification,

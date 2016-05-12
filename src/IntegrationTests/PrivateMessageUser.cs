@@ -13,12 +13,20 @@ namespace IntegrationTests
         {
             HipchatApiConfig.AuthToken = TestsConfig.AuthToken;
         }
-        [Fact(DisplayName = "Can private message a user")]
+        [Fact(DisplayName = "Can private message a user", Skip = "Setup auth token")]
         public void CanCreateRoom()
         {
             var client = new HipchatClient();
 
-            Assert.DoesNotThrow(() => client.PrivateMessageUser("kgobel@gmail.com", "test message"));
+            try
+            {
+                client.PrivateMessageUser("kgobel@gmail.com", "test message");
+            }
+            catch
+            {
+                // they removed does not throw, i don't know better way how to fail an assert
+                Assert.True(false);
+            }
         }
 
        public void Dispose()

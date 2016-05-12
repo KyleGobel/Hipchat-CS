@@ -10,7 +10,7 @@ namespace IntegrationTests
         {
             HipchatApiConfig.AuthToken = TestsConfig.AuthToken;
         }
-        [Fact(DisplayName = "Can get all users")]
+        [Fact(DisplayName = "Can get all users", Skip = "Setup auth token")]
         public void CanGetAllUsers()
         {
             var client = new HipchatClient();

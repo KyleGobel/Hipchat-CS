@@ -10,7 +10,7 @@ namespace IntegrationTests
         {
             HipchatApiConfig.AuthToken = TestsConfig.AuthToken;
         }
-        [Fact(DisplayName = "Can delete a room")]
+        [Fact(DisplayName = "Can delete a room", Skip = "Setup auth token")]
         public void CanDeleteRoom()
         {
             const string testRoomName = "Delete Me";

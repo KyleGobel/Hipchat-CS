@@ -19,7 +19,7 @@ namespace IntegrationTests
             _existingRoomId = TestHelpers.GetARoomId(_client,"Send Notification Test Room");
 
         }
-        [Fact(DisplayName = "Can send a room notification")]
+        [Fact(DisplayName = "Can send a room notification", Skip = "Setup auth token")]
         public void CanSendRoomNotification()
         {
             var sendMessageResult = _client.SendNotification(_existingRoomId, "Test message");

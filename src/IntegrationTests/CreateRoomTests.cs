@@ -13,7 +13,7 @@ namespace IntegrationTests
         {
             HipchatApiConfig.AuthToken = TestsConfig.AuthToken;
         }
-        [Fact(DisplayName = "Can create a room")]
+        [Fact(DisplayName = "Can create a room", Skip="Setup auth token")]
         public void CanCreateRoom()
         {
             IHipchatClient client = new HipchatClient();

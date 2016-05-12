@@ -13,7 +13,7 @@ namespace IntegrationTests
             _client = new HipchatClient(TestsConfig.AuthToken);
         }
 
-        [Fact(DisplayName = "Can set the room topic of an existing room")]
+        [Fact(DisplayName = "Can set the room topic of an existing room", Skip = "Setup auth token")]
         public void CanSetRoomTopicOfExistingRoom()
         {
             var roomId = TestHelpers.GetARoomId(_client, "Test Set Topic Room");

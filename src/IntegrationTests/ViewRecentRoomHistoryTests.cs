@@ -26,7 +26,7 @@ namespace IntegrationTests
             _client.ShareFileWithRoom(_existingRoomId.ToString(), @"..\..\Data\RUv8sSn.png", "Second entry to history with file");
         }
 
-        [Fact(DisplayName = "Can view recent room history")]
+        [Fact(DisplayName = "Can view recent room history", Skip = "Setup auth token")]
         public void CanViewRecentRoomHistory()
         {
             var roomHistory = _client.ViewRecentRoomHistory(_existingRoomName);
@@ -54,7 +54,7 @@ namespace IntegrationTests
             Assert.NotNull(historyItem.File);
         }
 
-        [Fact(DisplayName = "Can view recent room history starting at a passed message")]
+        [Fact(DisplayName = "Can view recent room history starting at a passed message", Skip = "Setup auth token")]
         public void CanViewRecentRoomHistoryNotBefore()
         {
             var roomHistory = _client.ViewRecentRoomHistory(_existingRoomName);

@@ -26,7 +26,7 @@ namespace IntegrationTests
             _client.ShareFileWithRoom(_existingRoomId.ToString(), @"..\..\Data\RUv8sSn.png", "Second entry to history with file");
         }
 
-        [Fact(DisplayName = "Can view full room history")]
+        [Fact(DisplayName = "Can view full room history", Skip = "Setup auth token")]
         public void CanViewFullRoomHistory()
         {
             var roomHistory = _client.ViewRoomHistory(_existingRoomName);

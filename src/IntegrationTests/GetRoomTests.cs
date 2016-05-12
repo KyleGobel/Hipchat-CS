@@ -26,12 +26,12 @@ namespace IntegrationTests
             _existingRoomName = "Test GetRooms";
         }
 
-        [Fact(DisplayName = "Trying to get a room that doesn't exist throws a RoomNotFound exception")]
+        [Fact(DisplayName = "Trying to get a room that doesn't exist throws a RoomNotFound exception", Skip = "Setup auth token")]
         public void GetRoomThrowsException()
         {
             Assert.Throws<HipchatRoomNotFoundException>(() =>_client.GetRoom("this room doesn't exist"));
         }
-        [Fact(DisplayName = "Can get room details by room name")]
+        [Fact(DisplayName = "Can get room details by room name", Skip = "Setup auth token")]
         public void CanGetRoomByName()
         {
             var result = _client.GetRoom(_existingRoomName);
@@ -46,7 +46,7 @@ namespace IntegrationTests
             Assert.NotNull(result.Owner);
         }
 
-        [Fact(DisplayName = "Can get room details by room id")]
+        [Fact(DisplayName = "Can get room details by room id", Skip = "Setup auth token")]
         public void CanGetRoomById()
         {
             var result = _client.GetRoom(_existingRoomId);

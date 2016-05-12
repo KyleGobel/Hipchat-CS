@@ -11,7 +11,7 @@ namespace IntegrationTests
         {
             HipchatApiConfig.AuthToken = TestsConfig.AuthToken;
         }
-        [Fact(DisplayName = "Can get all emoticons")]
+        [Fact(DisplayName = "Can get all emoticons", Skip = "Setup auth token")]
         public void CanGetAllEmoticons()
         {
             var client = new HipchatClient();

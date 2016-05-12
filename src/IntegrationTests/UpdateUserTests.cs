@@ -28,7 +28,7 @@ namespace IntegrationTests
             }
         }
 
-        [Fact(DisplayName = "Can update a user")]
+        [Fact(DisplayName = "Can update a user", Skip = "Setup auth token")]
         public void CanUpdateUser()
         {
             var request = new UpdateUserRequest() {Email = UserEmail, Name = UserName, MentionName = "NumberOne",
