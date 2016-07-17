@@ -7,14 +7,17 @@ namespace HipchatApiV2
     public class HipchatEndpoints
     {
         private static string EndpointHost;
+
+        private const string HipChatApi = "api.hipchat.com";
+
         static HipchatEndpoints()
         {
-            EndpointHost = ConfigurationManager.AppSettings["hipchat_endpoint_host"] ?? "api.hipchat.com";
+            EndpointHost = ConfigurationManager.AppSettings["hipchat_endpoint_host"] ?? HipChatApi;
         }
 
         public static void SetEndpointHost(string host)
         {
-            EndpointHost = host;
+            EndpointHost = host ?? HipChatApi;
         }
 
         private HipchatEndpoints() {}
