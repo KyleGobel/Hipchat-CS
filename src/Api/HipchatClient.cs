@@ -23,9 +23,12 @@ namespace HipchatApiV2
         /// file appSettings for 'hipchat_auth_token'
         /// </summary>
         /// <param name="authToken">the auth token given by hipchat</param>
-        public HipchatClient(string authToken = null)
+        /// <param name="serverName">self hosted server name</param>
+        public HipchatClient(string authToken = null, string serverName = null)
         {
             _authToken = authToken ?? HipchatApiConfig.AuthToken;
+
+            HipchatEndpoints.SetEndpointHost(serverName);
 
             ConfigureSerializer();
         }

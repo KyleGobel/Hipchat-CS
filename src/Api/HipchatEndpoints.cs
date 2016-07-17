@@ -6,10 +6,15 @@ namespace HipchatApiV2
 {
     public class HipchatEndpoints
     {
-        private static readonly string EndpointHost;
+        private static string EndpointHost;
         static HipchatEndpoints()
         {
             EndpointHost = ConfigurationManager.AppSettings["hipchat_endpoint_host"] ?? "api.hipchat.com";
+        }
+
+        public static void SetEndpointHost(string host)
+        {
+            EndpointHost = host;
         }
 
         private HipchatEndpoints() {}
@@ -36,7 +41,6 @@ namespace HipchatApiV2
         public static string UpdateUserEndpointFormat { get { return String.Format("https://{0}/v2/user/{{0}}", EndpointHost); } }
         public static string DeleteUserEndpointFormat { get { return String.Format("https://{0}/v2/user/{{0}}", EndpointHost); } }
         public static string PrivateMessageUserEnpointFormat {get { return string.Format("https://{0}/v2/user/{{0}}/message", EndpointHost); }}
-
         public static string AddMemberEnpdointFormat { get { return String.Format("https://{0}/v2/room/{{0}}/member/{{1}}", EndpointHost); } }
         public static string UpdatePhotoEnpdointFormat { get { return String.Format("https://{0}/v2/user/{{0}}/photo", EndpointHost); } }
     }
