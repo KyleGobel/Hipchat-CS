@@ -48,7 +48,10 @@ namespace HipchatApiV2
                 RoomEvent.TryParse(s, out e);
                 return e;
             };
-        }
+			JsConfig<CardStyle>.SerializeFn = cardStyle => cardStyle.ToString().ToLowercaseUnderscore();
+			JsConfig<CardFormat>.SerializeFn = cardFormat => cardFormat.ToString().ToLowercaseUnderscore();
+			JsConfig<CardAttributeValueStyle>.SerializeFn = cavStyle => cavStyle.ToString().ToLowercaseUnderscore();
+		}
         private JsConfigScope JsonSerializerConfigScope()
         {
             return JsConfig.With(
