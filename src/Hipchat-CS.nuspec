@@ -12,10 +12,10 @@
     <language>en-US</language>
     <projectUrl>https://github.com/KyleGobel/Hipchat-CS/</projectUrl>
     <dependencies>
-      <dependency id="ServiceStack.Text" version="4.0.18"/>
+      <dependency id="ServiceStack.Text.Core" version="1.0.37"/>
     </dependencies>
   </metadata>
   <files>
-    <file src="..\bin\HipchatApiV2.dll" target="lib"/>
+    <file src="..\bin\netstandard1.3\HipchatApiV2.dll" target="lib"/>
   </files>
 </package>
