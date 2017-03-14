@@ -36,7 +36,7 @@ All methods have several optional paramaters and or overloads, fully documented.
 **Examples**
 
 ```cs
-//will look in app.config for the appSetting 'hipchat_auth_token', 
+//will look for an environment variable named 'hipchat_auth_token',
 //or you can pass it in via the constructor
 var client = new HipchatClient();
 

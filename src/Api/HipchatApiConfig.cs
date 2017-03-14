@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 
 namespace HipchatApiV2
 {
@@ -7,7 +6,7 @@ namespace HipchatApiV2
     {
         static HipchatApiConfig()
         {
-            AuthToken = ConfigurationManager.AppSettings["hipchat_auth_token"] ??  "";
+            AuthToken = System.Environment.GetEnvironmentVariable("hipchat_auth_token") ??  "";
         }
 
         public static string AuthToken { get; set; }

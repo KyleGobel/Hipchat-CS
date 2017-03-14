@@ -1,6 +1,5 @@
 ﻿using ServiceStack;
 using System;
-using System.Configuration;
 
 namespace HipchatApiV2
 {
@@ -9,7 +8,7 @@ namespace HipchatApiV2
         private static readonly string EndpointHost;
         static HipchatEndpoints()
         {
-            EndpointHost = ConfigurationManager.AppSettings["hipchat_endpoint_host"] ?? "api.hipchat.com";
+            EndpointHost = System.Environment.GetEnvironmentVariable("hipchat_endpoint_host") ?? "api.hipchat.com";
         }
 
         private HipchatEndpoints() {}
