@@ -951,11 +951,11 @@ namespace HipchatApiV2
 
 
         #region ViewPrivateChatHistory
-        public HipchatViewRoomHistoryResponse ViewPrivateChatHistory(string user, string date = "recent", string timezone = "UTC", int startIndex = 0, int maxResults = 100, bool reverse = true)
+        public HipchatViewRoomHistoryResponse ViewPrivateChatHistory(string username, string date = "recent", string timezone = "UTC", int startIndex = 0, int maxResults = 100, bool reverse = true)
         {
             using (JsonSerializerConfigScope())
             {
-                if (user.IsEmpty() || user.Length > 100)
+                if (username.IsEmpty() || username.Length > 100)
                     throw new ArgumentOutOfRangeException("user", "Valid roomName length is 1-100.");
                 if (date.IsEmpty())
                     throw new ArgumentOutOfRangeException("date", "Valid date should be passed.");
@@ -968,7 +968,7 @@ namespace HipchatApiV2
 
                 try
                 {
-                    return HipchatEndpoints.ViewPrivateChatHistoryEndpoint.Fmt(user)
+                    return HipchatEndpoints.ViewPrivateChatHistoryEndpoint.Fmt(username)
                         .AddQueryParam("date", date)
                         .AddQueryParam("timezone", timezone)
                         .AddQueryParam("start-index", startIndex)

@@ -473,5 +473,34 @@ namespace HipchatApiV2
         /// https://www.hipchat.com/docs/apiv2/method/update_photo
         /// </remarks>
         bool UpdatePhoto(string idOrEmail, string photo);
+
+        /// <summary>
+        /// Fetch the history of a private chat
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="date">Either the latest date to fetch history for in ISO-8601 format, or 'recent' to fetch the latest 75 messages. Note, paging isn't supported for 'recent', however they are real-time values, whereas date queries may not include the most recent messages.</param>
+        /// <param name="timezone">Your timezone. Must be a supported timezone name, please see wikipedia TZ database page.</param>
+        /// <param name="startIndex">The start index for the result set</param>
+        /// <param name="maxResults">The maximum number of results. Valid length 0-100</param>
+        /// <param name="reverse">Reverse the output such that the oldest message is first. For consistent paging, set to <c>false</c>.</param>
+        /// <returns>
+        /// A HipchatGetAllRoomsResponse
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// roomName;Valid username length is 1-100.
+        /// or
+        /// date;Valid date should be passed.
+        /// or
+        /// timezone;Valid timezone should be passed.
+        /// or
+        /// startIndex;startIndex must be between 0 and 100
+        /// or
+        /// maxResults;maxResults must be between 0 and 1000
+        /// </exception>
+        /// <remarks>
+        /// Authentication required, with scope view_group, view_messages. https://www.hipchat.com/docs/apiv2/method/get_privatechat_message
+        /// </remarks>
+        HipchatViewRoomHistoryResponse ViewPrivateChatHistory(string username, string date = "recent", string timezone = "UTC", int startIndex = 0, int maxResults = 100, bool reverse = true);
+
     }
 }
