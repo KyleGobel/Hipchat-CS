@@ -38,5 +38,7 @@ namespace HipchatApiV2
 
         public static string AddMemberEnpdointFormat { get { return String.Format("https://{0}/v2/room/{{0}}/member/{{1}}", EndpointHost); } }
         public static string UpdatePhotoEnpdointFormat { get { return String.Format("https://{0}/v2/user/{{0}}/photo", EndpointHost); } }
+
+        public static string ViewPrivateChatHistoryEndpoint { get { return String.Format("https://{0}/v2/user/{{0}}/history", EndpointHost); } }
     }
 }
