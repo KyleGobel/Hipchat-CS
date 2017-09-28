@@ -1,3 +1,7 @@
+**Note**
+The company I work for no longer uses HipChat so maintaining this is much harder.  If anyone is interested in taking this over and handling checking out the pull requests or fixing issues drop me a line and I'll hand over the reigns.  I won't be making anymore updates here.
+
+
 Hipchat-CS
 ==========
 
